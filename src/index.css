@@ -16,6 +16,14 @@
     user-select: none;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Completely suppress OS default cursor and pointed hand when cursor-none is active */
+  .cursor-none,
+  .cursor-none *,
+  .cursor-none button,
+  .cursor-none a {
+    cursor: none !important;
+  }
 }
 
 /* Neon Glow Utilities */
