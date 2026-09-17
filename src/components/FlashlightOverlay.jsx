@@ -4,9 +4,9 @@ import { useSpring } from 'framer-motion';
 /**
  * FlashlightOverlay
  * Provides the 150px radius spotlight effect revealing the background.
- * Uses smooth spring physics for responsive and buttery tracking.
+ * Respects opticsEnabled: when false (Cold Boot), the mask is solid black with no spotlight.
  */
-export default function FlashlightOverlay({ pointerPos, active }) {
+export default function FlashlightOverlay({ pointerPos, active, opticsEnabled = false }) {
   const smoothX = useSpring(pointerPos.x, { damping: 28, stiffness: 260 });
   const smoothY = useSpring(pointerPos.y, { damping: 28, stiffness: 260 });
 
@@ -18,24 +18,26 @@ export default function FlashlightOverlay({ pointerPos, active }) {
   if (!active) return null;
 
   const hasMoved = pointerPos.x !== -999 && pointerPos.y !== -999;
+  const showSpotlight = opticsEnabled && hasMoved;
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden cursor-none">
+    <div className={`absolute inset-0 pointer-events-none z-20 overflow-hidden ${opticsEnabled ? 'cursor-none' : ''}`}>
       {/* 
-        Pitch black overlay with a radial mask punched out around the cursor 
-        Circle radius: 150px. Center receives soft cyan illumination, edges fade into total black.
+        Pitch black overlay:
+        When opticsEnabled is true: radial mask punched out around cursor (150px radius).
+        When opticsEnabled is false: solid pitch black with zero illumination.
       */}
       <div
-        className="absolute inset-0 transition-opacity duration-500"
+        className="absolute inset-0 transition-all duration-300"
         style={{
-          background: hasMoved
+          background: showSpotlight
             ? `radial-gradient(circle 150px at ${pointerPos.x}px ${pointerPos.y}px, transparent 0%, rgba(0, 0, 0, 0.4) 65%, rgba(0, 0, 0, 0.96) 92%, #000000 100%)`
             : '#000000',
         }}
       />
 
-      {/* Subtle cyan illumination halo */}
-      {hasMoved && (
+      {/* Subtle cyan illumination halo (only active when optics online) */}
+      {showSpotlight && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{

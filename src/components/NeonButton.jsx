@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 /**
  * NeonButton
  * Centered in the screen.
- * Strictly respects flashlight stealth: opacity is calculated via Euclidean distance
+ * Strictly respects flashlight stealth & cold boot opticsEnabled state:
+ * When opticsEnabled is false, opacity is strictly 0 with pointer-events: none.
+ * When opticsEnabled is true, opacity is calculated via Euclidean distance
  * from the flashlight position (x,y) to the button center (bx, by).
- * Replaces default pointed hand with artistic target-lock state.
  */
-export default function NeonButton({ flashlightPos, onInitialize, isRevealedState, onHoverChange }) {
+export default function NeonButton({ flashlightPos, onInitialize, isRevealedState, onHoverChange, opticsEnabled = false }) {
   // Center coordinates (screen center)
   const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
   const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
@@ -17,6 +18,8 @@ export default function NeonButton({ flashlightPos, onInitialize, isRevealedStat
 
   // Calculate Euclidean distance to the flashlight
   const opacity = useMemo(() => {
+    // If optics are offline, button is strictly invisible and inert
+    if (!opticsEnabled) return 0;
     if (isRevealedState) return 1;
     if (!flashlightPos || flashlightPos.x === undefined || flashlightPos.y === undefined) {
       return 0; // Pitch dark initially before pointer moves
@@ -32,15 +35,15 @@ export default function NeonButton({ flashlightPos, onInitialize, isRevealedStat
     if (distance >= maxRadius) return 0;
     if (distance <= minRadius) return 1;
     return Math.max(0, Math.min(1, (maxRadius - distance) / (maxRadius - minRadius)));
-  }, [flashlightPos, bx, by, isRevealedState]);
+  }, [flashlightPos, bx, by, isRevealedState, opticsEnabled]);
 
-  const isClickable = opacity > 0.35;
+  const isClickable = opticsEnabled && opacity > 0.35;
 
   return (
     <div 
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
       style={{
-        opacity: opacity,
+        opacity: opticsEnabled ? opacity : 0,
         transition: 'opacity 0.08s ease-out',
       }}
     >
