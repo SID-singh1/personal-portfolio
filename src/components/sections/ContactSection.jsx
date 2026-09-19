@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Mail, Copy, Check, Terminal, Github, Linkedin, Twitter, ArrowUpRight } from 'lucide-react';
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+import ScrollCard from '../ScrollCard';
 
 export default function ContactSection() {
   const [copied, setCopied] = useState(false);
@@ -23,26 +13,22 @@ export default function ContactSection() {
   };
 
   return (
-    <motion.section
-      id="contact"
-      className="mb-24 scroll-mt-24"
-      variants={sectionVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-    >
+    <div id="contact" className="scroll-mt-24">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
-        <div className="flex items-center space-x-3">
-          <div className="w-2 h-2 rounded-full bg-purple-400" />
-          <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-            05 // DIRECT TRANSMISSION
-          </h3>
+      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="mb-8">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 rounded-full bg-purple-400" />
+            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
+              05 // GET IN TOUCH
+            </h3>
+          </div>
+          <span className="text-xs font-mono text-white/30">[OPEN CHANNEL]</span>
         </div>
-        <span className="text-xs font-mono text-white/25">[INBOX_LISTENING]</span>
-      </div>
+      </ScrollCard>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0c0c0e]/80 backdrop-blur-xl p-8 sm:p-12 relative overflow-hidden">
+      <ScrollCard entranceThreshold={0.14} exitThreshold={0.72} exitComplete={0.95} yOffset={28}>
+        <div className="rounded-2xl border border-white/[0.08] bg-[#0c0c0e]/80 backdrop-blur-xl p-8 sm:p-12 relative overflow-hidden">
         {/* Ambient background glow */}
         <div className="absolute -top-32 -right-32 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -134,6 +120,7 @@ export default function ContactSection() {
           </div>
         </div>
       </div>
-    </motion.section>
-  );
+    </ScrollCard>
+  </div>
+);
 }

@@ -36,7 +36,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative w-screen min-h-screen bg-[#09090b]">
+    <div className="relative w-full overflow-x-hidden min-h-screen bg-[#09090b]">
       <AnimatePresence mode="wait">
         {!isOverclocked && !isPoweringDown && (
           <CleanPortfolio key="clean" onOverclock={handleOverclock} />

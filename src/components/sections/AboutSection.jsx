@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Code2, Terminal, ShieldCheck, Sparkles, Cpu, Layers } from 'lucide-react';
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+import ScrollCard from '../ScrollCard';
 
 const codeTabs = [
   {
@@ -63,28 +53,29 @@ export default function AboutSection() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <motion.section
-      id="about"
-      className="mb-36 scroll-mt-24"
-      variants={sectionVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-    >
+    <div id="about" className="scroll-mt-24">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
-        <div className="flex items-center space-x-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400" />
-          <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-            01 // ARCHITECTURAL DOSSIER
-          </h3>
+      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="mb-8">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 rounded-full bg-cyan-400" />
+            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
+              01 // ABOUT ME
+            </h3>
+          </div>
+          <span className="text-xs font-mono text-white/30">[BACKGROUND & CRAFT]</span>
         </div>
-        <span className="text-xs font-mono text-white/25">[INSPECTOR_ACTIVE]</span>
-      </div>
+      </ScrollCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left column: narrative bio */}
-        <div className="lg:col-span-5 space-y-6">
+        <ScrollCard
+          entranceThreshold={0.14}
+          exitThreshold={0.66}
+          exitComplete={0.94}
+          yOffset={28}
+          className="lg:col-span-5 space-y-6"
+        >
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white/90">
             Crafting the invisible mechanics behind visceral user interfaces.
           </h2>
@@ -118,86 +109,92 @@ export default function AboutSection() {
               <p className="text-[11px] text-white/30">TypeScript & Rust</p>
             </div>
           </div>
-        </div>
+        </ScrollCard>
 
         {/* Right column: Interactive Code Terminal Window */}
-        <div className="lg:col-span-7 rounded-xl border border-white/[0.08] bg-[#0c0c0e]/95 backdrop-blur-xl shadow-2xl overflow-hidden">
-          {/* Terminal Titlebar with tabs */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.06]">
-            {/* Window control dots */}
-            <div className="flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
-            </div>
+        <ScrollCard
+          entranceThreshold={0.14}
+          exitThreshold={0.62}
+          exitComplete={0.92}
+          yOffset={28}
+          className="lg:col-span-7"
+        >
+          <div className="rounded-xl border border-white/[0.08] bg-[#0c0c0e]/95 backdrop-blur-xl shadow-2xl overflow-hidden">
+            {/* Terminal Titlebar with tabs */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.06]">
+              {/* Window control dots */}
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+              </div>
 
-            {/* Tabs */}
-            <div className="flex items-center space-x-1">
-              {codeTabs.map((tab, idx) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === idx;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(idx)}
-                    className={`flex items-center space-x-1.5 px-3 py-1 rounded text-xs font-mono transition-all ${
-                      isActive
-                        ? 'bg-white/[0.08] text-white/90 border border-white/[0.08]'
-                        : 'text-white/35 hover:text-white/60 hover:bg-white/[0.02]'
-                    }`}
-                  >
-                    <Icon className="w-3 h-3 text-cyan-400/80" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="hidden sm:flex items-center text-[10px] text-white/25 font-mono">
-              UTF-8
-            </div>
-          </div>
-
-          {/* Terminal Code Viewer */}
-          <div className="p-5 font-mono text-[12px] sm:text-[13px] leading-relaxed overflow-x-auto text-white/80">
-            <pre className="text-white/70">
-              <code>
-                {codeTabs[activeTab].code.split('\n').map((line, lIdx) => (
-                  <div key={lIdx} className="flex">
-                    <span className="select-none text-white/20 w-8 text-right pr-4 text-[11px]">
-                      {lIdx + 1}
-                    </span>
-                    <span
-                      className={
-                        line.startsWith('#')
-                          ? 'text-cyan-300 font-bold'
-                          : line.includes('interface') || line.includes('const')
-                          ? 'text-purple-400'
-                          : line.includes('"')
-                          ? 'text-emerald-300/90'
-                          : line.includes(':')
-                          ? 'text-sky-300'
-                          : 'text-white/60'
-                      }
+              {/* Tabs */}
+              <div className="flex items-center space-x-1">
+                {codeTabs.map((tab, idx) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === idx;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(idx)}
+                      className={`flex items-center space-x-1.5 px-3 py-1 rounded text-xs font-mono transition-all ${
+                        isActive
+                          ? 'bg-white/[0.08] text-white/90 border border-white/[0.08]'
+                          : 'text-white/40 hover:text-white/70 hover:bg-white/[0.02]'
+                      }`}
                     >
-                      {line}
-                    </span>
-                  </div>
-                ))}
-              </code>
-            </pre>
-          </div>
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Status Bar */}
-          <div className="px-4 py-1.5 bg-white/[0.015] border-t border-white/[0.04] flex items-center justify-between text-[11px] font-mono text-white/25">
-            <span className="flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>LN {codeTabs[activeTab].code.split('\n').length}, COL 1</span>
-            </span>
-            <span>TS-SERVER: READY</span>
+              <div className="hidden sm:flex items-center text-[10px] text-white/25 font-mono">
+                UTF-8
+              </div>
+            </div>
+
+            {/* Code Body */}
+            <div className="p-5 font-mono text-xs overflow-x-auto bg-[#08080a] min-h-[260px]">
+              <pre className="text-white/80 leading-relaxed font-light">
+                <code>
+                  {codeTabs[activeTab].code.split('\n').map((line, idx) => (
+                    <div key={idx} className="table-row">
+                      <span className="table-cell select-none pr-4 text-white/20 text-right w-6">
+                        {idx + 1}
+                      </span>
+                      <span
+                        className={
+                          line.startsWith('//') || line.startsWith('#')
+                            ? 'text-white/35 italic'
+                            : line.includes(':') && !line.includes('"')
+                            ? 'text-cyan-300'
+                            : line.includes('"')
+                            ? 'text-emerald-300/90'
+                            : 'text-white/60'
+                        }
+                      >
+                        {line}
+                      </span>
+                    </div>
+                  ))}
+                </code>
+              </pre>
+            </div>
+
+            {/* Status Bar */}
+            <div className="px-4 py-1.5 bg-white/[0.015] border-t border-white/[0.04] flex items-center justify-between text-[11px] font-mono text-white/25">
+              <span className="flex items-center space-x-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>LN {codeTabs[activeTab].code.split('\n').length}, COL 1</span>
+              </span>
+              <span>TS-SERVER: READY</span>
+            </div>
           </div>
-        </div>
+        </ScrollCard>
       </div>
-    </motion.section>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Zap, Cpu, Activity } from 'lucide-react';
-import SignalEmitter from './SignalEmitter';
+import { Terminal, Zap } from 'lucide-react';
 import HeroSection from './sections/HeroSection';
 import AboutSection from './sections/AboutSection';
 import SkillsSection from './sections/SkillsSection';
@@ -13,14 +12,69 @@ import ContactSection from './sections/ContactSection';
  * CleanPortfolio Component
  * Hyper-clean, minimalist Vercel/Linear-inspired dark portfolio.
  * Features:
- * - SignalEmitter: 5 predetermined cycling octilinear PCB circuit pulses from widget to top-left every 10s
- * - Modular Hackathon-grade scroll sections with unique animations and physics
- * - Amplified Temptation Trigger widget with sonar pulse, violent twitch, and overclock hook
+ * - Serene, distraction-free reading canvas (pure focus for recruiters)
+ * - Scroll-linked entrance & exit fade physics (Apple-grade fluid dissolves)
+ * - Subliminal circadian atmospheric ambient gradient wash & live system clock
+ * - Micro-die architectural silicon watermark [ S · I · D ] at 2.8% opacity
+ * - Amplified Temptation Trigger widget with corner breathing halo, sonar pulse, and violent twitch
  */
 export default function CleanPortfolio({ onOverclock }) {
   const [widgetHovered, setWidgetHovered] = useState(false);
   const [glitchTwitch, setGlitchTwitch] = useState(false);
   const [sonarPing, setSonarPing] = useState(0);
+  const [currentTime, setCurrentTime] = useState('');
+  const [circadianCycle, setCircadianCycle] = useState({
+    label: 'AVAILABLE FOR WORK',
+    gradient: 'from-cyan-500/[0.03]',
+  });
+
+  // Live Local Time & Circadian Atmospheric Shift
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const simHourParam = urlParams?.get('simHour');
+      const isSim = simHourParam !== null && simHourParam !== undefined && simHourParam !== '';
+      const hours = isSim ? parseInt(simHourParam, 10) : now.getHours();
+
+      const timeStr = isSim
+        ? `${String(hours).padStart(2, '0')}:30:00`
+        : now.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+          });
+      setCurrentTime(timeStr);
+
+      // Circadian ambient wash based on user's hour (3% subtle wash, base dark canvas remains solid)
+      if (hours >= 22 || hours < 5) {
+        setCircadianCycle({
+          label: 'NIGHTLY COMPILE // LOW-LATENCY',
+          gradient: 'from-indigo-500/[0.035] via-purple-500/[0.01]',
+        });
+      } else if (hours >= 5 && hours < 12) {
+        setCircadianCycle({
+          label: 'DAWN CYCLES // SYSTEMS WARM',
+          gradient: 'from-cyan-500/[0.035] via-sky-500/[0.01]',
+        });
+      } else if (hours >= 12 && hours < 18) {
+        setCircadianCycle({
+          label: 'PEAK LOAD // CONCURRENT WORKLOADS',
+          gradient: 'from-white/[0.025] via-transparent',
+        });
+      } else {
+        setCircadianCycle({
+          label: 'DUSK RECURSION // ASYNC FLUSH',
+          gradient: 'from-amber-500/[0.03] via-orange-500/[0.01]',
+        });
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Violent Twitch: every 8s, harsh 150ms X-axis snap
   useEffect(() => {
@@ -49,7 +103,7 @@ export default function CleanPortfolio({ onOverclock }) {
 
   return (
     <motion.div
-      className="relative min-h-screen w-full bg-[#09090b] text-neutral-100 overflow-y-auto selection:bg-cyan-500/30 selection:text-cyan-200"
+      className="relative min-h-screen w-full bg-[#09090b] text-neutral-100 selection:bg-cyan-500/30 selection:text-cyan-200"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -64,15 +118,25 @@ export default function CleanPortfolio({ onOverclock }) {
         }}
       />
 
-      {/* ── Faint Top Ambient Gradient ── */}
-      <div className="fixed top-0 inset-x-0 h-96 bg-gradient-to-b from-cyan-500/[0.02] via-transparent to-transparent pointer-events-none" />
+      {/* ── Subliminal Circadian Top Ambient Gradient Wash ── */}
+      <div
+        className={`fixed top-0 inset-x-0 h-96 bg-gradient-to-b ${circadianCycle.gradient} to-transparent pointer-events-none transition-colors duration-1000`}
+      />
 
-      {/* ── Signal Emitter: Cycles 5 predetermined PCB paths every 10s from widget to top-left ── */}
-      <SignalEmitter />
+      {/* ── Micro-Die Architectural Silicon Watermark [ S · I · D ] ── */}
+      <div className="fixed top-24 right-8 md:right-28 pointer-events-none select-none z-0 opacity-[0.028] font-mono text-right">
+        <div className="text-7xl md:text-9xl font-black tracking-widest leading-none text-white">
+          SID
+        </div>
+        <div className="text-[11px] tracking-[0.35em] text-white pt-1">
+          SILICON DIE // REV-04 // 64-BIT
+        </div>
+      </div>
 
       {/* ── Sticky Top Navigation Bar ── */}
       <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#09090b]/80 border-b border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          {/* Logo & Version */}
           <div className="flex items-center space-x-3">
             <div className="w-7 h-7 rounded-md bg-white/[0.08] border border-white/[0.08] flex items-center justify-center">
               <span className="text-xs font-bold text-white/80 font-mono">S</span>
@@ -85,8 +149,16 @@ export default function CleanPortfolio({ onOverclock }) {
             </div>
           </div>
 
+          {/* Center: Live Clock & Circadian Status */}
+          <div className="hidden lg:flex items-center space-x-2 text-[11px] font-mono text-white/40 px-3 py-1 rounded-full border border-white/[0.05] bg-white/[0.015]">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-white/85 font-medium">{currentTime || '00:00:00'}</span>
+            <span className="text-white/15">•</span>
+            <span className="text-white/50">{circadianCycle.label}</span>
+          </div>
+
           {/* Navigation Anchors */}
-          <div className="hidden md:flex items-center space-x-7 text-[13px] text-white/50 font-medium">
+          <div className="hidden md:flex items-center space-x-6 text-[13px] text-white/50 font-medium">
             <a href="#about" className="hover:text-white/90 transition-colors duration-200">
               About
             </a>
@@ -106,14 +178,29 @@ export default function CleanPortfolio({ onOverclock }) {
         </div>
       </nav>
 
-      {/* ── Main Content Container ── */}
+      {/* ── Main Content Container with Scroll Exit Physics ── */}
       <main className="relative max-w-5xl mx-auto px-6">
         <HeroSection />
-        <AboutSection />
-        <SkillsSection />
-        <ProjectsSection />
-        <ExperienceSection />
-        <ContactSection />
+
+        <div className="mb-36">
+          <AboutSection />
+        </div>
+
+        <div className="mb-36">
+          <SkillsSection />
+        </div>
+
+        <div className="mb-36">
+          <ProjectsSection />
+        </div>
+
+        <div className="mb-36">
+          <ExperienceSection />
+        </div>
+
+        <div className="mb-24">
+          <ContactSection />
+        </div>
       </main>
 
       {/* ── Footer ── */}
@@ -138,7 +225,7 @@ export default function CleanPortfolio({ onOverclock }) {
 
       {/* ═══════════════════════════════════════════════════════════════════
           THE TEMPTATION TRIGGER (WIDGET) — Fixed Bottom-Right
-          • Origin point for the SignalEmitter electrical pulses
+          • Ambient Corner Halo: breathing cyan aura behind button
           • Sonar Pulse: expanding cyan ring every 4s
           • Violent Twitch: harsh 150ms X-axis snap + red/cyan shadow every 8s
           • Hover: expansion to "[ OVERCLOCK SYSTEM ]"
@@ -146,6 +233,23 @@ export default function CleanPortfolio({ onOverclock }) {
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="fixed bottom-8 right-8 z-50">
         <div className="relative flex items-center justify-center">
+          {/* Ambient Corner Halo — subtle breathing radial aura */}
+          <motion.div
+            className="absolute -inset-6 rounded-full pointer-events-none"
+            animate={{
+              scale: [1, 1.35, 1],
+              opacity: [0.12, 0.3, 0.12],
+            }}
+            transition={{
+              duration: 4.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            style={{
+              background: 'radial-gradient(circle, rgba(0, 243, 255, 0.25) 0%, transparent 70%)',
+            }}
+          />
+
           {/* Sonar Pulse Ring */}
           <AnimatePresence>
             <motion.div

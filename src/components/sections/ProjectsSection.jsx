@@ -1,16 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Github, ExternalLink, Cpu, Zap, Activity } from 'lucide-react';
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+import ScrollCard from '../ScrollCard';
 
 const projects = [
   {
@@ -158,40 +149,43 @@ function InteractiveProjectCard({ project }) {
 
 export default function ProjectsSection() {
   return (
-    <motion.section
-      id="projects"
-      className="mb-36 scroll-mt-24"
-      variants={sectionVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
-    >
+    <div id="projects" className="scroll-mt-24">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
-        <div className="flex items-center space-x-3">
-          <div className="w-2 h-2 rounded-full bg-amber-400" />
-          <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-            03 // SELECTED WORKS
-          </h3>
+      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="mb-10">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 rounded-full bg-amber-400" />
+            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
+              03 // FEATURED PROJECTS
+            </h3>
+          </div>
+          <span className="text-xs font-mono text-white/30">[ENGINEERED SYSTEMS]</span>
         </div>
-        <span className="text-xs font-mono text-white/25">[03 SYSTEMS_DEPLOYED]</span>
-      </div>
 
-      <div className="space-y-4 mb-10">
-        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white/90">
-          Featured systems, computational engines, and graphics environments.
-        </h2>
-        <p className="text-sm text-white/40 max-w-xl">
-          Architected for high throughput, predictable computational complexity, and tactile feedback.
-        </p>
-      </div>
+        <div className="space-y-4">
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white/90">
+            Featured systems, computational engines, and graphics environments.
+          </h2>
+          <p className="text-sm text-white/40 max-w-xl">
+            Architected for high throughput, predictable computational complexity, and tactile feedback.
+          </p>
+        </div>
+      </ScrollCard>
 
       {/* Projects List */}
       <div className="space-y-6">
         {projects.map((project) => (
-          <InteractiveProjectCard key={project.id} project={project} />
+          <ScrollCard
+            key={project.id}
+            entranceThreshold={0.14}
+            exitThreshold={0.70}
+            exitComplete={0.94}
+            yOffset={32}
+          >
+            <InteractiveProjectCard project={project} />
+          </ScrollCard>
         ))}
       </div>
-    </motion.section>
+    </div>
   );
 }

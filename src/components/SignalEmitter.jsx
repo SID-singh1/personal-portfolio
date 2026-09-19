@@ -1,204 +1,244 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * 10 Predetermined Octilinear PCB Paths (normalized to 1000 x 1000 viewport units)
- * Origin: Bottom-Right (~940, 940) near the Temptation Trigger widget
- * Destinations: Distributed gracefully across the top-left and left-side zones
- * Geometry: STRICT 90° and 45° angles only. Solder vias at key junctions.
+ * 10 Predetermined Octilinear PCB Paths that route FLUSH to the physical viewport margins.
+ * Origin: Dynamically measured from the Temptation Trigger widget's live viewport position.
+ * Terminus: Docks directly into the physical screen edges (x = 0 or y = 0) with edge connector pads:
+ *   0: Left margin at y=40 (flush left edge next to branding)
+ *   1: Top margin at x=180 (flush top edge above status badges)
+ *   2: Top margin at x=320 (flush top edge above telemetry)
+ *   3: Top margin at x=500 (flush top edge at center ceiling)
+ *   4: Left margin at y=115 (flush left edge adjacent to status pill)
+ *   5: Left margin at y=185 (flush left edge adjacent to hero headline)
+ *   6: Left margin at y=310 (flush left edge adjacent to bio lead)
+ *   7: Left margin at y=480 (flush left edge adjacent to action buttons)
+ *   8: Left margin at y=640 (flush left edge adjacent to system bus)
+ *   9: Top margin at x=80 (flush top edge near extreme top-left corner)
+ *
+ * Strict Octilinear Geometry: 90° and 45° angles only.
  */
-const SIGNAL_PATHS = [
-  // 0: Perimeter Rail (sweeps along bottom margin, steps 45°, sweeps up left rail into header)
-  {
-    id: 'perimeter-rail',
-    d: 'M 940,940 L 260,940 L 190,870 L 190,320 L 130,260 L 130,95',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 260, y: 940 },
-      { x: 190, y: 870 },
-      { x: 190, y: 320 },
-      { x: 130, y: 260 },
-      { x: 130, y: 95 },
-    ],
-  },
-  // 1: Core Highway (diagonal 45° step, traverses center, doglegs into top-left)
-  {
-    id: 'core-highway',
-    d: 'M 940,940 L 860,860 L 590,860 L 470,740 L 470,410 L 300,240 L 140,240 L 95,195 L 95,90',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 860, y: 860 },
-      { x: 590, y: 860 },
-      { x: 470, y: 740 },
-      { x: 470, y: 410 },
-      { x: 300, y: 240 },
-      { x: 140, y: 240 },
-      { x: 95, y: 195 },
-      { x: 95, y: 90 },
-    ],
-  },
-  // 2: Orthogonal Staircase (90° horizontal/vertical architectural steps)
-  {
-    id: 'orthogonal-staircase',
-    d: 'M 940,940 L 940,780 L 730,780 L 730,560 L 510,560 L 510,340 L 290,340 L 290,140 L 110,140',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 940, y: 780 },
-      { x: 730, y: 780 },
-      { x: 730, y: 560 },
-      { x: 510, y: 560 },
-      { x: 510, y: 340 },
-      { x: 290, y: 340 },
-      { x: 290, y: 140 },
-      { x: 110, y: 140 },
-    ],
-  },
-  // 3: High Trench Rail (ascends right margin, turns 90° across ceiling, descends 45° to top-left)
-  {
-    id: 'high-trench',
-    d: 'M 940,940 L 940,250 L 880,190 L 330,190 L 230,290 L 150,290 L 150,90',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 940, y: 250 },
-      { x: 880, y: 190 },
-      { x: 330, y: 190 },
-      { x: 230, y: 290 },
-      { x: 150, y: 290 },
-      { x: 150, y: 90 },
-    ],
-  },
-  // 4: Octilinear Serpent (complex 45° alternating doglegs across the viewport)
-  {
-    id: 'octilinear-serpent',
-    d: 'M 940,940 L 820,820 L 820,670 L 670,520 L 450,520 L 350,420 L 350,220 L 230,100 L 95,100',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 820, y: 820 },
-      { x: 820, y: 670 },
-      { x: 670, y: 520 },
-      { x: 450, y: 520 },
-      { x: 350, y: 420 },
-      { x: 350, y: 220 },
-      { x: 230, y: 100 },
-      { x: 95, y: 100 },
-    ],
-  },
-  // 5: Status Bus Injection (targets the live status pill area)
-  {
-    id: 'status-bus',
-    d: 'M 940,940 L 400,940 L 310,850 L 310,380 L 250,320 L 250,140 L 180,140',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 400, y: 940 },
-      { x: 310, y: 850 },
-      { x: 310, y: 380 },
-      { x: 250, y: 320 },
-      { x: 250, y: 140 },
-      { x: 180, y: 140 },
-    ],
-  },
-  // 6: The Diagonal Express (bold 45° climbing traverse through center)
-  {
-    id: 'diagonal-express',
-    d: 'M 940,940 L 500,500 L 500,300 L 360,160 L 160,160 L 110,110',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 500, y: 500 },
-      { x: 500, y: 300 },
-      { x: 360, y: 160 },
-      { x: 160, y: 160 },
-      { x: 110, y: 110 },
-    ],
-  },
-  // 7: Mid-Stratum Ladder (right climb, 45° dogleg through center, lands at left margin)
-  {
-    id: 'mid-stratum-ladder',
-    d: 'M 940,940 L 940,620 L 820,500 L 420,500 L 280,360 L 280,180 L 210,110 L 80,110',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 940, y: 620 },
-      { x: 820, y: 500 },
-      { x: 420, y: 500 },
-      { x: 280, y: 360 },
-      { x: 280, y: 180 },
-      { x: 210, y: 110 },
-      { x: 80, y: 110 },
-    ],
-  },
-  // 8: Deep Floor Trench (sweeps low along bottom, hugs outer left spine)
-  {
-    id: 'deep-floor-trench',
-    d: 'M 940,940 L 880,880 L 180,880 L 180,600 L 120,540 L 120,180 L 70,130 L 70,75',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 880, y: 880 },
-      { x: 180, y: 880 },
-      { x: 180, y: 600 },
-      { x: 120, y: 540 },
-      { x: 120, y: 180 },
-      { x: 70, y: 130 },
-      { x: 70, y: 75 },
-    ],
-  },
-  // 9: Quantum Upper Bypass (ascends right side, cuts through upper third, steps into top nav)
-  {
-    id: 'quantum-upper-bypass',
-    d: 'M 940,940 L 940,480 L 680,480 L 560,360 L 320,360 L 320,200 L 220,100 L 140,100',
-    vias: [
-      { x: 940, y: 940 },
-      { x: 940, y: 480 },
-      { x: 680, y: 480 },
-      { x: 560, y: 360 },
-      { x: 320, y: 360 },
-      { x: 320, y: 200 },
-      { x: 220, y: 100 },
-      { x: 140, y: 100 },
-    ],
-  },
-];
+function getSignalPaths(originX, originY) {
+  const ox = originX || 935;
+  const oy = originY || 940;
+
+  return [
+    // 0: Flush to left edge at y=40
+    {
+      id: 'margin-left-40',
+      d: `M ${ox},${oy} L 260,${oy} L 190,${oy - 70} L 190,260 L 120,190 L 120,70 L 90,40 L 0,40`,
+      endPad: { x: 0, y: 40, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 260, y: oy },
+        { x: 190, y: oy - 70 },
+        { x: 190, y: 260 },
+        { x: 120, y: 190 },
+        { x: 120, y: 70 },
+        { x: 90, y: 40 },
+      ],
+    },
+    // 1: Flush to top edge at x=180
+    {
+      id: 'margin-top-180',
+      d: `M ${ox},${oy} L 380,${oy} L 290,${oy - 90} L 290,380 L 230,320 L 230,50 L 180,0`,
+      endPad: { x: 180, y: 0, orientation: 'vertical' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 380, y: oy },
+        { x: 290, y: oy - 90 },
+        { x: 290, y: 380 },
+        { x: 230, y: 320 },
+        { x: 230, y: 50 },
+      ],
+    },
+    // 2: Flush to top edge at x=320
+    {
+      id: 'margin-top-320',
+      d: `M ${ox},${oy} L ${ox - 120},${oy - 120} L ${ox - 120},560 L 620,380 L 420,380 L 350,310 L 350,30 L 320,0`,
+      endPad: { x: 320, y: 0, orientation: 'vertical' },
+      vias: [
+        { x: ox, y: oy },
+        { x: ox - 120, y: oy - 120 },
+        { x: ox - 120, y: 560 },
+        { x: 620, y: 380 },
+        { x: 420, y: 380 },
+        { x: 350, y: 310 },
+        { x: 350, y: 30 },
+      ],
+    },
+    // 3: Flush to top edge at x=500
+    {
+      id: 'margin-top-500',
+      d: `M ${ox},${oy} L ${ox},640 L ${ox - 140},500 L 560,500 L 560,60 L 500,0`,
+      endPad: { x: 500, y: 0, orientation: 'vertical' },
+      vias: [
+        { x: ox, y: oy },
+        { x: ox, y: 640 },
+        { x: ox - 140, y: 500 },
+        { x: 560, y: 500 },
+        { x: 560, y: 60 },
+      ],
+    },
+    // 4: Flush to left edge at y=115
+    {
+      id: 'margin-left-115',
+      d: `M ${ox},${oy} L 520,${Math.max(200, oy - (ox - 520))} L 520,340 L 380,200 L 160,200 L 75,115 L 0,115`,
+      endPad: { x: 0, y: 115, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 520, y: Math.max(200, oy - (ox - 520)) },
+        { x: 520, y: 340 },
+        { x: 380, y: 200 },
+        { x: 160, y: 200 },
+        { x: 75, y: 115 },
+      ],
+    },
+    // 5: Flush to left edge at y=185
+    {
+      id: 'margin-left-185',
+      d: `M ${ox},${oy} L 560,${Math.max(200, oy - (ox - 560))} L 440,${Math.max(200, oy - (ox - 560))} L 280,280 L 185,185 L 0,185`,
+      endPad: { x: 0, y: 185, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 560, y: Math.max(200, oy - (ox - 560)) },
+        { x: 440, y: Math.max(200, oy - (ox - 560)) },
+        { x: 280, y: 280 },
+        { x: 185, y: 185 },
+      ],
+    },
+    // 6: Flush to left edge at y=310
+    {
+      id: 'margin-left-310',
+      d: `M ${ox},${oy} L 160,${oy} L 90,${oy - 70} L 90,400 L 0,310`,
+      endPad: { x: 0, y: 310, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 160, y: oy },
+        { x: 90, y: oy - 70 },
+        { x: 90, y: 400 },
+      ],
+    },
+    // 7: Flush to left edge at y=480
+    {
+      id: 'margin-left-480',
+      d: `M ${ox},${oy} L ${ox},720 L 650,720 L 500,570 L 280,570 L 190,480 L 0,480`,
+      endPad: { x: 0, y: 480, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: ox, y: 720 },
+        { x: 650, y: 720 },
+        { x: 500, y: 570 },
+        { x: 280, y: 570 },
+        { x: 190, y: 480 },
+      ],
+    },
+    // 8: Flush to left edge at y=640
+    {
+      id: 'margin-left-640',
+      d: `M ${ox},${oy} L ${ox - 80},${oy - 80} L 240,${oy - 80} L 120,760 L 0,640`,
+      endPad: { x: 0, y: 640, orientation: 'horizontal' },
+      vias: [
+        { x: ox, y: oy },
+        { x: ox - 80, y: oy - 80 },
+        { x: 240, y: oy - 80 },
+        { x: 120, y: 760 },
+      ],
+    },
+    // 9: Flush to top edge at x=80
+    {
+      id: 'margin-top-80',
+      d: `M ${ox},${oy} L 200,${oy} L 130,${oy - 70} L 130,130 L 80,80 L 80,0`,
+      endPad: { x: 80, y: 0, orientation: 'vertical' },
+      vias: [
+        { x: ox, y: oy },
+        { x: 200, y: oy },
+        { x: 130, y: oy - 70 },
+        { x: 130, y: 130 },
+        { x: 80, y: 80 },
+      ],
+    },
+  ];
+}
 
 export default function SignalEmitter() {
+  const [origin, setOrigin] = useState({ x: 935, y: 940 });
   const [activePathIndex, setActivePathIndex] = useState(0);
   const [signalKey, setSignalKey] = useState(0);
   const lastIndexRef = useRef(0);
 
-  // Pick randomly out of the 10 paths (ensuring no back-to-back repeats)
+  // Measure widget's live viewport position
+  useEffect(() => {
+    const updateOrigin = () => {
+      const el = document.getElementById('overclock-temptation-widget');
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const x = ((rect.left + rect.width / 2) / window.innerWidth) * 1000;
+        const y = ((rect.top + rect.height / 2) / window.innerHeight) * 1000;
+        setOrigin({ x: Math.round(x), y: Math.round(y) });
+      }
+    };
+
+    updateOrigin();
+    window.addEventListener('resize', updateOrigin);
+    return () => window.removeEventListener('resize', updateOrigin);
+  }, []);
+
+  const signalPaths = useMemo(
+    () => getSignalPaths(origin.x, origin.y),
+    [origin.x, origin.y]
+  );
+
+  // Timing: Fire one immediately at mount (500ms), then discrete 7.5s to 12.5s intervals (step 0.5s)
   useEffect(() => {
     const triggerSignal = () => {
       let nextIndex;
       do {
-        nextIndex = Math.floor(Math.random() * SIGNAL_PATHS.length);
-      } while (nextIndex === lastIndexRef.current && SIGNAL_PATHS.length > 1);
+        nextIndex = Math.floor(Math.random() * signalPaths.length);
+      } while (nextIndex === lastIndexRef.current && signalPaths.length > 1);
 
       lastIndexRef.current = nextIndex;
       setActivePathIndex(nextIndex);
       setSignalKey((k) => k + 1);
     };
 
-    // Initial signal 3.5s after mount to catch quick scanners
+    // Immediate initial fire on page load (500ms delay for DOM stabilization)
     const initialTimer = setTimeout(() => {
       triggerSignal();
-    }, 3500);
+    }, 500);
 
-    // Randomized interval around 10 seconds (~9.5s to 11s)
+    // Subsequent pulses: 7.5s to 12.5s with discrete 0.5s steps
     let intervalTimer;
     const scheduleNext = () => {
-      const delay = 9500 + Math.random() * 1500;
+      // Possible step counts: 0 to 10 (each is 0.5s -> 0.0s to 5.0s added to 7.5s)
+      const step = Math.floor(Math.random() * 11);
+      const delayMs = (7.5 + step * 0.5) * 1000;
+
       intervalTimer = setTimeout(() => {
         triggerSignal();
         scheduleNext();
-      }, delay);
+      }, delayMs);
     };
 
-    scheduleNext();
+    // Begin schedule loop after initial burst
+    const loopTimer = setTimeout(() => {
+      scheduleNext();
+    }, 1200);
 
     return () => {
       clearTimeout(initialTimer);
+      clearTimeout(loopTimer);
       clearTimeout(intervalTimer);
     };
-  }, []);
+  }, [signalPaths.length]);
 
-  const activePath = SIGNAL_PATHS[activePathIndex];
+  const activePath = signalPaths[activePathIndex] || signalPaths[0];
+
+  // S-Curve Velocity profile:
+  // Starts slow [0.78, 0], accelerates into violent surge, decelerates [0.22, 1] into perimeter
+  const surgeEase = [0.78, 0, 0.22, 1];
+  const travelDuration = 1.75;
+  const tailDelay = 0.32;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden">
@@ -221,105 +261,190 @@ export default function SignalEmitter() {
 
           {/* Electric energy gradient along path */}
           <linearGradient id="signalGradient" x1="100%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#ffb703" stopOpacity="0.75" />
-            <stop offset="35%" stopColor="#00f3ff" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.4" />
+            <stop offset="0%" stopColor="#ffb703" stopOpacity="0.8" />
+            <stop offset="35%" stopColor="#00f3ff" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.5" />
           </linearGradient>
         </defs>
 
         <AnimatePresence mode="wait">
           <g key={signalKey}>
-            {/* Background dormant trace track (very faint guide) */}
+            {/* Background dormant trace track (faint structural guide) */}
             <path
               d={activePath.d}
               fill="none"
-              stroke="rgba(255,255,255,0.018)"
+              stroke="rgba(255,255,255,0.015)"
               strokeWidth="1.2"
               strokeLinecap="square"
             />
 
-            {/* Glowing Phosphor Trace that draws out and softly dissipates */}
+            {/* Phosphor afterglow trail: fades out gracefully */}
+            <motion.path
+              d={activePath.d}
+              fill="none"
+              stroke="rgba(0,243,255,0.12)"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{
+                pathLength: [0, 1],
+                opacity: [0, 0.4, 0.2, 0],
+              }}
+              transition={{
+                pathLength: { duration: travelDuration, ease: surgeEase },
+                opacity: { duration: travelDuration + 1.0, times: [0, 0.3, 0.7, 1], ease: 'easeOut' },
+              }}
+            />
+
+            {/* Traveling Electrical Surge Beam (Head surges, Tail chases and joins!) */}
             <motion.path
               d={activePath.d}
               fill="none"
               stroke="url(#signalGradient)"
-              strokeWidth="1.8"
+              strokeWidth="2.0"
               strokeLinecap="round"
               filter="url(#circuit-signal-glow)"
-              initial={{ pathLength: 0, opacity: 0 }}
+              initial={{ pathLength: 0, pathOffset: 0, opacity: 0 }}
               animate={{
-                pathLength: [0, 1, 1],
-                opacity: [0, 0.7, 0.4, 0],
+                pathLength: 1,
+                pathOffset: 1,
+                opacity: [0, 1, 1, 0],
               }}
               transition={{
-                pathLength: { duration: 2.2, ease: [0.25, 0.1, 0.25, 1] },
-                opacity: { duration: 3.2, times: [0, 0.2, 0.7, 1], ease: 'easeOut' },
+                pathLength: {
+                  duration: travelDuration,
+                  ease: surgeEase,
+                },
+                pathOffset: {
+                  delay: tailDelay,
+                  duration: travelDuration,
+                  ease: surgeEase,
+                },
+                opacity: {
+                  duration: travelDuration + tailDelay + 0.1,
+                  times: [0, 0.08, 0.92, 1],
+                  ease: 'linear',
+                },
               }}
             />
 
-            {/* High-intensity electric core spark line */}
+            {/* High-intensity electric core filament */}
             <motion.path
               d={activePath.d}
               fill="none"
               stroke="#ffffff"
-              strokeWidth="0.8"
+              strokeWidth="0.9"
               strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
+              initial={{ pathLength: 0, pathOffset: 0, opacity: 0 }}
               animate={{
-                pathLength: [0, 1, 1],
-                opacity: [0, 0.85, 0],
+                pathLength: 1,
+                pathOffset: 1,
+                opacity: [0, 0.9, 0.9, 0],
               }}
               transition={{
-                pathLength: { duration: 2.2, ease: [0.25, 0.1, 0.25, 1] },
-                opacity: { duration: 2.5, times: [0, 0.3, 1], ease: 'easeOut' },
+                pathLength: {
+                  duration: travelDuration,
+                  ease: surgeEase,
+                },
+                pathOffset: {
+                  delay: tailDelay,
+                  duration: travelDuration,
+                  ease: surgeEase,
+                },
+                opacity: {
+                  duration: travelDuration + tailDelay + 0.05,
+                  times: [0, 0.08, 0.92, 1],
+                  ease: 'linear',
+                },
               }}
             />
 
-            {/* Solder Vias along the active route that pulse as the electrical packet passes */}
+            {/* Solder Vias along route */}
             {activePath.vias.map((via, idx) => {
               const fraction = idx / (activePath.vias.length - 1);
-              const delay = fraction * 2.0;
+              const viaDelay = Math.pow(fraction, 1.6) * travelDuration;
 
               return (
                 <g key={`via-${idx}`}>
-                  {/* Via outer ring */}
                   <motion.circle
                     cx={via.x}
                     cy={via.y}
-                    r="4"
+                    r="3.5"
                     fill="none"
-                    stroke="rgba(0,243,255,0.5)"
+                    stroke="rgba(0,243,255,0.45)"
                     strokeWidth="1"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{
-                      scale: [0.8, 1.35, 1],
-                      opacity: [0, 0.75, 0.1, 0],
+                      scale: [0.8, 1.3, 1],
+                      opacity: [0, 0.7, 0],
                     }}
                     transition={{
-                      delay,
-                      duration: 1.1,
+                      delay: viaDelay,
+                      duration: 0.7,
                       ease: 'easeOut',
                     }}
                   />
-                  {/* Via center micro-node */}
                   <motion.circle
                     cx={via.x}
                     cy={via.y}
-                    r="1.8"
+                    r="1.6"
                     fill="#00f3ff"
                     initial={{ opacity: 0 }}
                     animate={{
                       opacity: [0, 0.9, 0],
                     }}
                     transition={{
-                      delay,
-                      duration: 0.8,
+                      delay: viaDelay,
+                      duration: 0.5,
                       ease: 'easeOut',
                     }}
                   />
                 </g>
               );
             })}
+
+            {/* Physical Edge Connector Contact Pad (lights up at perimeter) */}
+            {activePath.endPad.orientation === 'horizontal' ? (
+              // Edge finger at left border (x = 0)
+              <motion.rect
+                x="0"
+                y={activePath.endPad.y - 4}
+                width="8"
+                height="8"
+                fill="#00f3ff"
+                filter="url(#circuit-signal-glow)"
+                initial={{ opacity: 0, scaleX: 0.5 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scaleX: [0.5, 1.4, 1],
+                }}
+                transition={{
+                  delay: travelDuration - 0.1,
+                  duration: 0.85,
+                  ease: 'easeOut',
+                }}
+              />
+            ) : (
+              // Edge finger at top border (y = 0)
+              <motion.rect
+                x={activePath.endPad.x - 4}
+                y="0"
+                width="8"
+                height="8"
+                fill="#00f3ff"
+                filter="url(#circuit-signal-glow)"
+                initial={{ opacity: 0, scaleY: 0.5 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scaleY: [0.5, 1.4, 1],
+                }}
+                transition={{
+                  delay: travelDuration - 0.1,
+                  duration: 0.85,
+                  ease: 'easeOut',
+                }}
+              />
+            )}
           </g>
         </AnimatePresence>
       </svg>
