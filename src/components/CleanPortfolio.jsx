@@ -6,7 +6,10 @@ import AboutSection from './sections/AboutSection';
 import SkillsSection from './sections/SkillsSection';
 import ProjectsSection from './sections/ProjectsSection';
 import ExperienceSection from './sections/ExperienceSection';
+import EducationSection from './sections/EducationSection';
+import AchievementsSection from './sections/AchievementsSection';
 import ContactSection from './sections/ContactSection';
+import CustomCursor from './CustomCursor';
 
 /**
  * CleanPortfolio Component
@@ -101,6 +104,34 @@ export default function CleanPortfolio({ onOverclock }) {
     return () => clearInterval(interval);
   }, []);
 
+  // In-Page Active Section Scroll Spy
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    const sectionIds = ['about', 'skills', 'experience', 'projects', 'education', 'honors', 'contact'];
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 240;
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sectionIds[i]);
+          return;
+        }
+      }
+      setActiveSection('hero');
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <motion.div
       className="relative min-h-screen w-full bg-[#09090b] text-neutral-100 selection:bg-cyan-500/30 selection:text-cyan-200"
@@ -109,6 +140,8 @@ export default function CleanPortfolio({ onOverclock }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* ── Precision Cyber Reticle Custom Cursor ── */}
+      <CustomCursor />
       {/* ── Background Cyber-Grid Layer ── */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.035]"
@@ -157,23 +190,36 @@ export default function CleanPortfolio({ onOverclock }) {
             <span className="text-white/50">{circadianCycle.label}</span>
           </div>
 
-          {/* Navigation Anchors */}
-          <div className="hidden md:flex items-center space-x-6 text-[13px] text-white/50 font-medium">
-            <a href="#about" className="hover:text-white/90 transition-colors duration-200">
-              About
-            </a>
-            <a href="#skills" className="hover:text-white/90 transition-colors duration-200">
-              Skills
-            </a>
-            <a href="#projects" className="hover:text-white/90 transition-colors duration-200">
-              Projects
-            </a>
-            <a href="#experience" className="hover:text-white/90 transition-colors duration-200">
-              Experience
-            </a>
-            <a href="#contact" className="hover:text-white/90 transition-colors duration-200">
-              Contact
-            </a>
+          {/* Navigation Anchors with Smooth Scroll & Active Indicator */}
+          <div className="hidden md:flex items-center space-x-5 text-[13px] font-medium">
+            {[
+              { id: 'about', label: 'About' },
+              { id: 'skills', label: 'Skills' },
+              { id: 'experience', label: 'Experience' },
+              { id: 'projects', label: 'Projects' },
+              { id: 'education', label: 'Education' },
+              { id: 'honors', label: 'Honors & Certs' },
+              { id: 'contact', label: 'Contact' },
+            ].map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollTo(item.id)}
+                className={`transition-colors duration-200 cursor-pointer relative py-1 ${
+                  activeSection === item.id
+                    ? 'text-cyan-300 font-semibold'
+                    : 'text-white/50 hover:text-white/90'
+                }`}
+              >
+                <span>{item.label}</span>
+                {activeSection === item.id && (
+                  <motion.span
+                    layoutId="activeNavIndicator"
+                    className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-cyan-400 shadow-[0_0_8px_rgba(0,243,255,0.8)] rounded-full"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </nav>
@@ -191,11 +237,19 @@ export default function CleanPortfolio({ onOverclock }) {
         </div>
 
         <div className="mb-36">
+          <ExperienceSection />
+        </div>
+
+        <div className="mb-36">
           <ProjectsSection />
         </div>
 
         <div className="mb-36">
-          <ExperienceSection />
+          <EducationSection />
+        </div>
+
+        <div className="mb-36">
+          <AchievementsSection />
         </div>
 
         <div className="mb-24">

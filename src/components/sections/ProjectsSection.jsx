@@ -149,14 +149,23 @@ function InteractiveProjectCard({ project }) {
 
 export default function ProjectsSection() {
   return (
-    <div id="projects" className="scroll-mt-24">
+    <div id="projects" className="relative scroll-mt-24">
+      {/* Subtle Atmospheric Ambient Wash (Emerald / Production Green Glow) */}
+      <div
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(16, 185, 129, 0.07), rgba(6, 182, 212, 0.02) 50%, transparent 80%)',
+        }}
+      />
+
       {/* Section Header */}
-      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="mb-10">
+      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-10">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
           <div className="flex items-center space-x-3">
             <div className="w-2 h-2 rounded-full bg-amber-400" />
             <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              03 // FEATURED PROJECTS
+              04 // FEATURED PROJECTS
             </h3>
           </div>
           <span className="text-xs font-mono text-white/30">[ENGINEERED SYSTEMS]</span>
