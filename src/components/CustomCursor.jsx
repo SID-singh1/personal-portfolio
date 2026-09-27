@@ -56,9 +56,26 @@ export default function CustomCursor({
     const handleMouseMove = (e) => {
       const x = e.clientX;
       const y = e.clientY;
+
+      // Scrollbar Gutter Bypass:
+      // If cursor is within ~18px of the viewport's right edge (native OS scrollbar track),
+      // release custom cursor and restore native OS pointer so clicking & dragging the scrollbar
+      // is completely natural and unobstructed.
+      const isOverScrollbar = x >= window.innerWidth - 18;
+      if (isOverScrollbar) {
+        document.documentElement.classList.remove('custom-cursor-active');
+        if (isVisible) setIsVisible(false);
+        return;
+      }
+
+      // Re-enable custom cyber cursor when cursor is inside the content area
+      if (!document.documentElement.classList.contains('custom-cursor-active')) {
+        document.documentElement.classList.add('custom-cursor-active');
+      }
+      if (!isVisible) setIsVisible(true);
+
       mouseX.set(x);
       mouseY.set(y);
-      if (!isVisible) setIsVisible(true);
 
       // Check if hovering interactive element
       const target = e.target;
@@ -92,6 +109,9 @@ export default function CustomCursor({
     };
 
     const handleMouseDown = (e) => {
+      // Don't intercept shockwaves if over scrollbar
+      if (e.clientX >= window.innerWidth - 18) return;
+
       setIsMouseDown(true);
 
       // Spawn kinetic click shockwave in that section's color
@@ -110,8 +130,16 @@ export default function CustomCursor({
     };
 
     const handleMouseUp = () => setIsMouseDown(false);
-    const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => {
+      document.documentElement.classList.remove('custom-cursor-active');
+      setIsVisible(false);
+    };
+    const handleMouseEnter = (e) => {
+      if (e.clientX < window.innerWidth - 18) {
+        document.documentElement.classList.add('custom-cursor-active');
+        setIsVisible(true);
+      }
+    };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);

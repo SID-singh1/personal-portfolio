@@ -9,6 +9,7 @@ import ExperienceSection from './sections/ExperienceSection';
 import EducationSection from './sections/EducationSection';
 import AchievementsSection from './sections/AchievementsSection';
 import ContactSection from './sections/ContactSection';
+import SectionSeparator from './SectionSeparator';
 import CustomCursor from './CustomCursor';
 
 /**
@@ -182,12 +183,10 @@ export default function CleanPortfolio({ onOverclock }) {
             </div>
           </div>
 
-          {/* Center: Live Clock & Circadian Status */}
-          <div className="hidden lg:flex items-center space-x-2 text-[11px] font-mono text-white/40 px-3 py-1 rounded-full border border-white/[0.05] bg-white/[0.015]">
+          {/* Center: Clean Live Clock */}
+          <div className="hidden lg:flex items-center space-x-2 text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.05] bg-white/[0.015]">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             <span className="text-white/85 font-medium">{currentTime || '00:00:00'}</span>
-            <span className="text-white/15">•</span>
-            <span className="text-white/50">{circadianCycle.label}</span>
           </div>
 
           {/* Navigation Anchors with Smooth Scroll & Active Indicator */}
@@ -224,34 +223,41 @@ export default function CleanPortfolio({ onOverclock }) {
         </div>
       </nav>
 
-      {/* ── Main Content Container with Scroll Exit Physics ── */}
+      {/* ── Main Content Container with Scroll Exit Physics & Architectural Demarcations ── */}
       <main className="relative max-w-5xl mx-auto px-6">
         <HeroSection />
 
-        <div className="mb-36">
+        <SectionSeparator label="01 // PROFILE & ARCHITECTURAL CRAFT" color="#00f3ff" />
+        <div className="mb-20">
           <AboutSection />
         </div>
 
-        <div className="mb-36">
+        <SectionSeparator label="02 // TECHNICAL CAPABILITIES & MATRIX" color="#818cf8" />
+        <div className="mb-20">
           <SkillsSection />
         </div>
 
-        <div className="mb-36">
+        <SectionSeparator label="03 // SAMSUNG R&D EDGE INTELLIGENCE" color="#0ea5e9" />
+        <div className="mb-20">
           <ExperienceSection />
         </div>
 
-        <div className="mb-36">
+        <SectionSeparator label="04 // FEATURED SYSTEMS & ENGINES" color="#10b981" />
+        <div className="mb-20">
           <ProjectsSection />
         </div>
 
-        <div className="mb-36">
+        <SectionSeparator label="05 // ACADEMIC RECORD & ALGORITHMS" color="#60a5fa" />
+        <div className="mb-20">
           <EducationSection />
         </div>
 
-        <div className="mb-36">
+        <SectionSeparator label="06 // HONORS, CREDENTIALS & SIGNALS" color="#f59e0b" />
+        <div className="mb-20">
           <AchievementsSection />
         </div>
 
+        <SectionSeparator label="07 // DIRECT COMMUNICATION CHANNELS" color="#c084fc" />
         <div className="mb-24">
           <ContactSection />
         </div>

@@ -3,162 +3,297 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * ShutdownTransition Component
- * 4-Phase Cinematic Shutdown to Cold Boot:
- * Phase 1 (0ms - 800ms): Rogue AI Matrix Glitch + Cyber Skull / Demon Glyph
- * Phase 2 (800ms - 1350ms): 4-Sided Diamond / Center Iris CRT Collapse
- * Phase 3 (1350ms - 3200ms): Pure Suspenseful Void (2s dead silent blackout)
- * Phase 4 (3200ms+): onComplete callback triggers Cold Boot
+ * Authentic 5-Stage Progressive Cyber Glitch & Vintage Curved-Diamond CRT TV Collapse:
+ *
+ * Stage 1 (0.0s - 1.0s): Faint matrix glitch + subtle toxic green skull on the LEFT
+ * Stage 2 (1.0s - 2.0s): Escalating glitch + sharper toxic green skull on the RIGHT
+ * Stage 3 (2.0s - 3.1s): Violent full-viewport shake + dominant CENTER skull (100% green phosphor glow)
+ * Stage 4 (3.1s - 3.8s): Vintage CRT TV collapse — curved diamond fold -> horizontal laser slit -> center spark -> blackout
+ * Stage 5 (3.8s - 5.2s): Dead silent suspenseful void (1.4s blackout before cold boot awakens)
  */
 export default function ShutdownTransition({ onComplete }) {
-  const [phase, setPhase] = useState('GLITCH'); // 'GLITCH' | 'COLLAPSE' | 'VOID'
+  // Glitch progressive step: 1 (left faint), 2 (right medium), 3 (center violent climax)
+  const [glitchStep, setGlitchStep] = useState(1);
+  const [phase, setPhase] = useState('GLITCH'); // 'GLITCH' | 'CRT_COLLAPSE' | 'VOID'
 
   useEffect(() => {
-    // Phase 1 -> Phase 2 (Diamond Collapse)
-    const t1 = setTimeout(() => {
-      setPhase('COLLAPSE');
-    }, 850);
+    // Step 1 -> Step 2 at 1.0s (Skull moves to Right, glitch intensifies)
+    const tStep2 = setTimeout(() => {
+      setGlitchStep(2);
+    }, 1000);
 
-    // Phase 2 -> Phase 3 (Suspenseful 2s Void)
-    const t2 = setTimeout(() => {
+    // Step 2 -> Step 3 at 2.0s (Master Skull in Center, violent screen shake)
+    const tStep3 = setTimeout(() => {
+      setGlitchStep(3);
+    }, 2000);
+
+    // Step 3 -> CRT Collapse at 3.1s (Curved diamond screen fold)
+    const tCollapse = setTimeout(() => {
+      setPhase('CRT_COLLAPSE');
+    }, 3100);
+
+    // CRT Collapse -> Suspenseful Void at 3.8s
+    const tVoid = setTimeout(() => {
       setPhase('VOID');
-    }, 1450);
+    }, 3800);
 
-    // Phase 3 -> Complete (Cold Boot Prompt Awakens)
-    const t3 = setTimeout(() => {
+    // Suspenseful Void -> Complete at 5.2s
+    const tEnd = setTimeout(() => {
       onComplete?.();
-    }, 3250);
+    }, 5200);
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
+      clearTimeout(tStep2);
+      clearTimeout(tStep3);
+      clearTimeout(tCollapse);
+      clearTimeout(tVoid);
+      clearTimeout(tEnd);
     };
   }, [onComplete]);
 
+  // Reusable Green Matrix Skull SVG Component
+  const CyberSkull = ({ size = 130, opacity = 1, glowIntensity = 15 }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        opacity,
+        filter: `drop-shadow(0 0 ${glowIntensity}px #00ff66) drop-shadow(0 0 ${glowIntensity * 2}px rgba(0,255,102,0.4))`,
+      }}
+      className="transition-all duration-300"
+    >
+      {/* Outer Cranium */}
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12C2 15.65 3.96 18.84 6.89 20.61L7 22H17L17.11 20.61C20.04 18.84 22 15.65 22 12C22 6.48 17.52 2 12 2Z"
+        fill="#020804"
+        stroke="#00ff66"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+
+      {/* Cybernetic Eye Sockets with Glowing Green Pupils */}
+      <path
+        d="M6.5 11C6.5 9.62 7.62 8.5 9 8.5C10.38 8.5 11.5 9.62 11.5 11C11.5 12.38 10.38 13.5 9 13.5C7.62 13.5 6.5 12.38 6.5 11Z"
+        fill="#00ff66"
+      />
+      <circle cx="9" cy="11" r="1.5" fill="#ffffff" />
+
+      <path
+        d="M12.5 11C12.5 9.62 13.62 8.5 15 8.5C16.38 8.5 17.5 9.62 17.5 11C17.5 12.38 16.38 13.5 15 13.5C13.62 13.5 12.5 12.38 12.5 11Z"
+        fill="#00ff66"
+      />
+      <circle cx="15" cy="11" r="1.5" fill="#ffffff" />
+
+      {/* Inverted Triangular Nasal Cavity */}
+      <polygon points="12,14 10.5,17 13.5,17" fill="#00ff66" />
+
+      {/* Cyber Mandible Teeth Grate */}
+      <path
+        d="M8 19V21M10.5 19V21M13.5 19V21M16 19V21"
+        stroke="#00ff66"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+
+      {/* Cross Temple Circuit Traces */}
+      <line x1="4.5" y1="8" x2="6.5" y2="8" stroke="#00ff66" strokeWidth="1" strokeDasharray="1 1" />
+      <line x1="17.5" y1="8" x2="19.5" y2="8" stroke="#00ff66" strokeWidth="1" strokeDasharray="1 1" />
+    </svg>
+  );
+
   return (
-    <div className="fixed inset-0 z-[100] pointer-events-auto select-none overflow-hidden bg-black">
+    <div className="fixed inset-0 z-[100] pointer-events-auto select-none overflow-hidden bg-black font-mono">
       {/* ═══════════════════════════════════════════════════════════════════
-          PHASE 1: ROGUE AI GLITCH & MATRIX CYBER SKULL
+          PHASE 1: PROGRESSIVE 3-SECOND GLITCH (GREEN & BLACK MATRIX)
           ═══════════════════════════════════════════════════════════════════ */}
       {phase === 'GLITCH' && (
-        <div className="relative w-full h-full flex flex-col items-center justify-center bg-black/90">
-          {/* CRT Screen Tear Slices */}
-          <div className="absolute inset-0 pointer-events-none animate-screen-tear opacity-85 z-10" />
+        <motion.div
+          className="relative w-full h-full flex items-center justify-center bg-black"
+          // Violent camera shake escalates at Step 3
+          animate={
+            glitchStep === 3
+              ? {
+                  x: [0, -18, 22, -14, 18, -10, 14, -8, 0],
+                  y: [0, 14, -18, 12, -14, 8, -10, 6, 0],
+                }
+              : glitchStep === 2
+              ? {
+                  x: [0, -6, 8, -5, 7, 0],
+                  y: [0, 4, -6, 5, -3, 0],
+                }
+              : {
+                  x: [0, -2, 3, -1, 0],
+                  y: [0, 1, -2, 2, 0],
+                }
+          }
+          transition={{
+            repeat: Infinity,
+            duration: glitchStep === 3 ? 0.12 : glitchStep === 2 ? 0.22 : 0.4,
+            ease: 'linear',
+          }}
+        >
+          {/* CRT Phosphor Scanline Overlay */}
+          <div className="absolute inset-0 pointer-events-none crt-overlay opacity-60 z-30" />
 
-          {/* Matrix Binary Rain Streams */}
-          <div className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden flex justify-around text-xs font-mono text-emerald-400 select-none">
-            {Array.from({ length: 18 }).map((_, i) => (
+          {/* Screen Tear Glitch Slices */}
+          <div
+            className={`absolute inset-0 pointer-events-none z-20 ${
+              glitchStep === 3
+                ? 'animate-screen-tear opacity-95'
+                : glitchStep === 2
+                ? 'animate-screen-tear opacity-50'
+                : 'opacity-20'
+            }`}
+          />
+
+          {/* Matrix Terminal Code Rain in Toxic Green */}
+          <div className="absolute inset-0 pointer-events-none opacity-30 overflow-hidden flex justify-around text-xs text-[#00ff66] select-none z-10">
+            {Array.from({ length: 22 }).map((_, i) => (
               <motion.div
                 key={i}
                 className="writing-mode-vertical"
-                initial={{ y: -100 }}
-                animate={{ y: [0, 800] }}
+                initial={{ y: -120 }}
+                animate={{ y: [0, 950] }}
                 transition={{
                   repeat: Infinity,
-                  duration: 1.5 + (i % 5) * 0.3,
+                  duration: 1.2 + (i % 6) * 0.2,
                   ease: 'linear',
-                  delay: (i % 7) * 0.15,
+                  delay: (i % 8) * 0.12,
                 }}
               >
-                010110010101001010110101001010110101001010110101
+                010011110101011001000101010100100100001101001100010011110100001101001011
               </motion.div>
             ))}
           </div>
 
-          {/* Rogue AI Cyber Skull Glyph */}
-          <motion.div
-            className="relative z-20 flex flex-col items-center justify-center space-y-4"
-            animate={{
-              x: [0, -6, 5, -3, 6, -2, 0],
-              y: [0, 3, -4, 2, -3, 1, 0],
-              filter: [
-                'drop-shadow(0 0 15px rgba(255,0,80,0.8))',
-                'drop-shadow(-8px 0 0 rgba(0,243,255,0.9)) drop-shadow(8px 0 0 rgba(255,0,80,0.9))',
-                'drop-shadow(6px 0 0 rgba(0,243,255,0.9)) drop-shadow(-6px 0 0 rgba(255,0,80,0.9))',
-                'drop-shadow(0 0 20px rgba(255,0,80,0.8))',
-              ],
-            }}
-            transition={{ repeat: Infinity, duration: 0.18, ease: 'linear' }}
-          >
-            {/* High-Tech Vector Cyber Skull */}
-            <svg
-              width="130"
-              height="130"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-28 h-28 sm:w-36 sm:h-36"
+          {/* ── Progressive Step 1 (0s - 1s): Faint Skull on the LEFT ── */}
+          {glitchStep === 1 && (
+            <motion.div
+              className="absolute left-[15%] sm:left-[22%] flex flex-col items-center space-y-3 z-20"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.35, scale: 0.95, x: [-2, 3, -2], y: [1, -2, 1] }}
+              transition={{ repeat: Infinity, duration: 0.25 }}
             >
-              {/* Outer Cranium */}
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12C2 15.65 3.96 18.84 6.89 20.61L7 22H17L17.11 20.61C20.04 18.84 22 15.65 22 12C22 6.48 17.52 2 12 2Z"
-                fill="#050508"
-                stroke="#ff0055"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-              />
+              <CyberSkull size={110} opacity={0.4} glowIntensity={10} />
+              <div className="px-2.5 py-0.5 rounded bg-black/80 border border-[#00ff66]/30 text-[9px] text-[#00ff66]/70 tracking-widest uppercase">
+                [01] INTRUSION_SYNC // RESISTANCE_DETECTED
+              </div>
+            </motion.div>
+          )}
 
-              {/* Eye Sockets with Glowing Demon Pupils */}
-              <path
-                d="M6.5 11C6.5 9.62 7.62 8.5 9 8.5C10.38 8.5 11.5 9.62 11.5 11C11.5 12.38 10.38 13.5 9 13.5C7.62 13.5 6.5 12.38 6.5 11Z"
-                fill="#ff0055"
-                className="animate-pulse"
-              />
-              <path
-                d="M12.5 11C12.5 9.62 13.62 8.5 15 8.5C16.38 8.5 17.5 9.62 17.5 11C17.5 12.38 16.38 13.5 15 13.5C13.62 13.5 12.5 12.38 12.5 11Z"
-                fill="#00f3ff"
-                className="animate-pulse"
-              />
+          {/* ── Progressive Step 2 (1s - 2s): Medium Skull on the RIGHT ── */}
+          {glitchStep === 2 && (
+            <motion.div
+              className="absolute right-[15%] sm:right-[22%] flex flex-col items-center space-y-3 z-20"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 0.7, scale: 1.05, x: [3, -4, 3], y: [-2, 3, -2] }}
+              transition={{ repeat: Infinity, duration: 0.18 }}
+            >
+              <CyberSkull size={130} opacity={0.75} glowIntensity={22} />
+              <div className="px-3 py-1 rounded bg-black/90 border border-[#00ff66]/60 text-[10px] text-[#00ff66] tracking-widest uppercase font-bold shadow-[0_0_15px_rgba(0,255,102,0.4)]">
+                [02] INJECTING_ROGUE_KERNEL // LOCKDOWN
+              </div>
+            </motion.div>
+          )}
 
-              {/* Inverted Triangular Nasal Cavity */}
-              <polygon points="12,14 10.5,17 13.5,17" fill="#ff0055" />
+          {/* ── Progressive Step 3 (2s - 3.1s): Dominant Master Skull in the CENTER with violent vibration ── */}
+          {glitchStep === 3 && (
+            <motion.div
+              className="relative flex flex-col items-center space-y-5 z-30"
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{
+                scale: [1.15, 1.25, 1.18, 1.28, 1.2],
+                opacity: 1,
+              }}
+              transition={{ repeat: Infinity, duration: 0.12 }}
+            >
+              <CyberSkull size={175} opacity={1} glowIntensity={40} />
 
-              {/* Tech Jaw / Mandible Teeth Grate */}
-              <path
-                d="M8 19V21M10.5 19V21M13.5 19V21M16 19V21"
-                stroke="#00f3ff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-
-            {/* Rogue System Glitch Tag */}
-            <div className="flex items-center space-x-2 px-3 py-1 rounded bg-black/90 border border-red-500/60 font-mono text-[10px] sm:text-xs text-red-400 font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(255,0,80,0.6)]">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-              <span>ROGUE_SYS_OVERRIDE // PURGING_HOST</span>
-            </div>
-          </motion.div>
-        </div>
+              <div className="flex items-center space-x-2 px-4 py-1.5 rounded bg-black border-2 border-[#00ff66] text-xs sm:text-sm text-[#00ff66] font-black tracking-[0.25em] uppercase shadow-[0_0_25px_#00ff66]">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00ff66] animate-ping" />
+                <span>OVERCLOCK_BREACH // CORE_PURGE</span>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════
-          PHASE 2: 4-SIDED DIAMOND / IRIS CRT COLLAPSE
+          PHASE 2: VINTAGE CRT TV CURVED-DIAMOND FOLD COLLAPSE (3.1s - 3.8s)
+          Stage A: Screen compresses into a curved barrel-diamond fold
+          Stage B: Snaps into a glowing green/white horizontal laser line
+          Stage C: Pinches horizontally to a center spark
+          Stage D: Snaps off to total blackout!
           ═══════════════════════════════════════════════════════════════════ */}
-      {phase === 'COLLAPSE' && (
-        <div className="relative w-full h-full flex items-center justify-center bg-black">
-          {/* Diamond mask collapsing from all 4 sides inward */}
+      {phase === 'CRT_COLLAPSE' && (
+        <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
+          {/* Stage A: The Curved Barrel-Diamond Screen Collapse */}
           <motion.div
-            className="w-full h-full bg-neutral-900 border-2 border-cyan-400/80 shadow-[0_0_60px_#00f3ff]"
-            style={{
-              clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+            className="w-full h-full bg-[#031509] border border-[#00ff66] shadow-[0_0_80px_#00ff66]"
+            initial={{
+              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+              scaleY: 1,
+              scaleX: 1,
+              opacity: 1,
             }}
-            initial={{ scale: 2.2, opacity: 1 }}
-            animate={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 0.48, ease: [0.76, 0, 0.24, 1] }}
+            animate={{
+              // First snaps into a curved 4-point diamond / barrel pinch
+              clipPath: [
+                'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+                'polygon(50% 12%, 88% 50%, 50% 88%, 12% 50%)',
+                'polygon(50% 48%, 98% 50%, 50% 52%, 2% 50%)',
+              ],
+              scaleY: [1, 0.45, 0.005],
+              scaleX: [1, 0.95, 0.98],
+              opacity: [1, 1, 0.9],
+            }}
+            transition={{
+              duration: 0.38,
+              times: [0, 0.55, 1],
+              ease: [0.77, 0, 0.175, 1],
+            }}
           />
 
-          {/* Center Phosphor Spark Pinch-Out */}
+          {/* Stage B: Super-Bright Phosphor Horizontal Laser Beam */}
           <motion.div
-            className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_40px_rgba(255,255,255,1),0_0_80px_#00f3ff]"
-            initial={{ scale: 3, opacity: 1 }}
-            animate={{ scale: 0, opacity: 0 }}
-            transition={{ delay: 0.35, duration: 0.15, ease: 'easeOut' }}
+            className="absolute inset-x-0 h-[2.5px] bg-[#00ff66] shadow-[0_0_30px_#00ff66,0_0_60px_#ffffff]"
+            initial={{ scaleX: 1, opacity: 0 }}
+            animate={{
+              scaleX: [1, 1, 0.05, 0],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              delay: 0.28,
+              duration: 0.25,
+              times: [0, 0.2, 0.8, 1],
+              ease: 'easeInOut',
+            }}
+          />
+
+          {/* Stage C: Final Dying Phosphor Center Spark */}
+          <motion.div
+            className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_30px_#ffffff,0_0_60px_#00ff66]"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [0, 2.5, 0.8, 0],
+              opacity: [0, 1, 0.9, 0],
+            }}
+            transition={{
+              delay: 0.45,
+              duration: 0.18,
+              times: [0, 0.3, 0.7, 1],
+              ease: 'easeOut',
+            }}
           />
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════
-          PHASE 3: THE SUSPENSEFUL VOID (2s Dead Silence Blackout)
+          PHASE 3: THE SUSPENSEFUL VOID (3.8s - 5.2s)
+          Dead silent 1.4-second pure blackout void before cold boot prompt
           ═══════════════════════════════════════════════════════════════════ */}
       {phase === 'VOID' && (
         <div className="w-full h-full bg-black cursor-none" />

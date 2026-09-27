@@ -18,6 +18,11 @@ import SectionBorderElectron from '../SectionBorderElectron';
 export default function AchievementsSection() {
   return (
     <div id="honors" className="relative scroll-mt-24">
+      {/* Oversized Faint Spatial Section Watermark */}
+      <span className="absolute -top-10 -left-2 sm:-left-6 text-8xl sm:text-9xl font-black text-amber-400/[0.04] select-none pointer-events-none font-mono">
+        06
+      </span>
+
       {/* Distinct Atmospheric Ambient Wash (Amber / Violet Prestige Glow) */}
       <div
         className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
@@ -29,14 +34,16 @@ export default function AchievementsSection() {
 
       {/* Section Header */}
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-10">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-amber-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              06 // HONORS, CREDENTIALS & LEADERSHIP
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-amber-500/10 border border-amber-500/30 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]">
+              SECTION 06
+            </span>
+            <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
+              HONORS & CREDENTIALS // GATE AIR 3966 & COMPETITIVE RIGOR
             </h3>
           </div>
-          <span className="text-xs font-mono text-amber-400/70 bg-amber-500/[0.06] px-2.5 py-0.5 rounded border border-amber-500/20">
+          <span className="text-[10px] sm:text-xs font-mono text-amber-400/80 bg-amber-500/[0.06] px-2.5 py-0.5 rounded border border-amber-500/20">
             [COMPETITIVE SIGNALS]
           </span>
         </div>

@@ -53,17 +53,26 @@ export default function AboutSection() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div id="about" className="scroll-mt-24">
+    <div id="about" className="relative scroll-mt-24">
+      {/* Oversized Faint Spatial Section Watermark */}
+      <span className="absolute -top-10 -left-2 sm:-left-6 text-8xl sm:text-9xl font-black text-cyan-400/[0.04] select-none pointer-events-none font-mono">
+        01
+      </span>
+
       {/* Section Header */}
-      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="mb-8">
-        <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+      <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-8">
+        <div className="flex items-center justify-between pb-4 border-b border-cyan-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 rounded-full bg-cyan-400" />
-            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              01 // ABOUT ME
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 shadow-[0_0_12px_rgba(0,243,255,0.2)]">
+              SECTION 01
+            </span>
+            <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
+              ABOUT ME // ARCHITECTURAL PHILOSOPHY
             </h3>
           </div>
-          <span className="text-xs font-mono text-white/30">[BACKGROUND & CRAFT]</span>
+          <span className="text-[10px] sm:text-xs font-mono text-cyan-400/60 bg-cyan-500/[0.04] px-2 py-0.5 rounded border border-cyan-500/15">
+            [SYS_ORIGIN]
+          </span>
         </div>
       </ScrollCard>
 

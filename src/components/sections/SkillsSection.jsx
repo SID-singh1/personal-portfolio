@@ -79,9 +79,9 @@ const skillCategories = [
     subtitle: 'Mathematical precision & structural complexity',
     icon: Trophy,
     accent: '#f59e0b',
-    badge: '680+ SOLVED',
+    badge: 'KNIGHT · 1837',
     skills: [
-      { name: 'Data Structures & Algorithms', note: '680+ LeetCode problems solved with top-tier efficiency', tag: 'LeetCode' },
+      { name: 'Data Structures & Algorithms', note: 'LeetCode Knight (Rating 1837, Top 6% Globally) with 680+ solved', tag: 'LeetCode' },
       { name: 'System Design & Scalability', note: 'Microservices, cache invalidation, load balancing', tag: 'Systems' },
       { name: 'Concurrency & Multi-Threading', note: 'Race condition prevention & lock-free queues', tag: 'Compute' },
       { name: 'Computer Architecture & OS Kernels', note: 'Memory hierarchy, paging, I/O bottlenecks', tag: 'Foundations' },
@@ -125,6 +125,11 @@ export default function SkillsSection() {
 
   return (
     <div id="skills" className="relative scroll-mt-24">
+      {/* Oversized Faint Spatial Section Watermark */}
+      <span className="absolute -top-10 -left-2 sm:-left-6 text-8xl sm:text-9xl font-black text-indigo-400/[0.04] select-none pointer-events-none font-mono">
+        02
+      </span>
+
       {/* Distinct Atmospheric Ambient Wash (Indigo / Cyber Violet Aura) */}
       <div
         className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
@@ -136,14 +141,18 @@ export default function SkillsSection() {
 
       {/* Section Header */}
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-8">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-indigo-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 rounded-full bg-cyan-400" />
-            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              02 // SKILLS & TECHNICAL ARSENAL
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-[0_0_12px_rgba(129,140,248,0.2)]">
+              SECTION 02
+            </span>
+            <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
+              TECHNICAL CAPABILITIES // SKILLS MATRIX
             </h3>
           </div>
-          <span className="text-xs font-mono text-white/30">[AI • SYSTEMS • INFRA]</span>
+          <span className="text-[10px] sm:text-xs font-mono text-indigo-400/70 bg-indigo-500/[0.04] px-2 py-0.5 rounded border border-indigo-500/20">
+            [AI • SYSTEMS • INFRA]
+          </span>
         </div>
 
         <div className="space-y-4">

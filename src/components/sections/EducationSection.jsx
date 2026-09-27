@@ -11,7 +11,7 @@ const educationData = [
     period: '2022 — 2026',
     scoreLabel: 'CGPA',
     score: '8.99 / 10.0',
-    status: 'SENIOR YEAR // GRADUATING 2026',
+    status: 'GRADUATED // CLASS OF 2026',
     badgeColor: 'cyan',
     highlights: [
       'Specialized in Distributed Systems, Core Algorithms, and Machine Intelligence architectures.',
@@ -52,6 +52,11 @@ const educationData = [
 export default function EducationSection() {
   return (
     <div id="education" className="relative scroll-mt-24">
+      {/* Oversized Faint Spatial Section Watermark */}
+      <span className="absolute -top-10 -left-2 sm:-left-6 text-8xl sm:text-9xl font-black text-sky-400/[0.04] select-none pointer-events-none font-mono">
+        05
+      </span>
+
       {/* Distinct Atmospheric Ambient Wash (Academic Sapphire / Sky Blue) */}
       <div
         className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
@@ -63,14 +68,18 @@ export default function EducationSection() {
 
       {/* Section Header */}
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-10">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-sky-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 rounded-full bg-sky-400" />
-            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              05 // ACADEMIC PEDIGREE
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-sky-500/10 border border-sky-500/30 text-sky-300 shadow-[0_0_12px_rgba(56,189,248,0.2)]">
+              SECTION 05
+            </span>
+            <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
+              ACADEMIC RECORD // VIT CSE & PEDIGREE
             </h3>
           </div>
-          <span className="text-xs font-mono text-white/30">[INSTITUTIONAL FOUNDATION]</span>
+          <span className="text-[10px] sm:text-xs font-mono text-sky-400/80 bg-sky-500/[0.06] px-2.5 py-0.5 rounded border border-sky-500/20">
+            [INSTITUTIONAL FOUNDATION]
+          </span>
         </div>
 
         <div className="space-y-4">
@@ -98,13 +107,13 @@ export default function EducationSection() {
             </div>
             <div>
               <div className="text-sm font-semibold text-white/95 flex items-center space-x-2">
-                <span>Algorithmic Mastery // LeetCode 680+ Solved</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
-                  TOP TIER
+                <span>Algorithmic Mastery // LeetCode Knight (Rating 1837)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-semibold">
+                  TOP 6% GLOBALLY
                 </span>
               </div>
               <p className="text-xs text-white/45 font-light mt-0.5">
-                Demonstrated mastery in dynamic programming, graph theory, trees, and system-level data structures.
+                Knight badge with 1837 contest rating and 680+ solved problems across dynamic programming, graph theory, and algorithmic complexity.
               </p>
             </div>
           </div>

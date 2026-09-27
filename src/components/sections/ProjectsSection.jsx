@@ -154,6 +154,11 @@ function InteractiveProjectCard({ project }) {
 export default function ProjectsSection() {
   return (
     <div id="projects" className="relative scroll-mt-24">
+      {/* Oversized Faint Spatial Section Watermark */}
+      <span className="absolute -top-10 -left-2 sm:-left-6 text-8xl sm:text-9xl font-black text-emerald-400/[0.04] select-none pointer-events-none font-mono">
+        04
+      </span>
+
       {/* Distinct Atmospheric Ambient Wash (Emerald / Production Green Glow) */}
       <div
         className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
@@ -165,14 +170,18 @@ export default function ProjectsSection() {
 
       {/* Section Header */}
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-10">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-emerald-500/20">
           <div className="flex items-center space-x-3">
-            <div className="w-2 h-2 rounded-full bg-amber-400" />
-            <h3 className="text-sm font-mono text-white/50 uppercase tracking-widest">
-              04 // FEATURED PROJECTS
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+              SECTION 04
+            </span>
+            <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
+              FEATURED PROJECTS // AI SYSTEMS & INFRASTRUCTURE
             </h3>
           </div>
-          <span className="text-xs font-mono text-white/30">[ENGINEERED SYSTEMS]</span>
+          <span className="text-[10px] sm:text-xs font-mono text-emerald-400/80 bg-emerald-500/[0.06] px-2.5 py-0.5 rounded border border-emerald-500/20">
+            [DEPLOYED SYSTEMS]
+          </span>
         </div>
 
         <div className="space-y-4">
