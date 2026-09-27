@@ -44,7 +44,7 @@ export default function ContactSection() {
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-8">
         <div className="flex items-center justify-between pb-4 border-b border-purple-500/20">
           <div className="flex items-center space-x-3">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-[0_0_12px_rgba(192,132,252,0.2)]">
+            <span className="px-3 py-1 rounded text-xs sm:text-[13px] font-mono font-bold tracking-wider uppercase bg-purple-500/10 border border-purple-500/30 text-purple-300 shadow-[0_0_14px_rgba(192,132,252,0.25)]">
               SECTION 07
             </span>
             <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">

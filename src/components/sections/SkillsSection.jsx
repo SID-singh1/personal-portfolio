@@ -143,7 +143,7 @@ export default function SkillsSection() {
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-8">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-indigo-500/20">
           <div className="flex items-center space-x-3">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-[0_0_12px_rgba(129,140,248,0.2)]">
+            <span className="px-3 py-1 rounded text-xs sm:text-[13px] font-mono font-bold tracking-wider uppercase bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-[0_0_14px_rgba(129,140,248,0.25)]">
               SECTION 02
             </span>
             <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">

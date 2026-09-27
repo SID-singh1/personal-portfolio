@@ -172,7 +172,7 @@ export default function ProjectsSection() {
       <ScrollCard exitThreshold={0.62} exitComplete={0.92} className="relative z-10 mb-10">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-emerald-500/20">
           <div className="flex items-center space-x-3">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+            <span className="px-3 py-1 rounded text-xs sm:text-[13px] font-mono font-bold tracking-wider uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.25)]">
               SECTION 04
             </span>
             <h3 className="text-xs sm:text-sm font-mono text-white/70 uppercase tracking-widest">
