@@ -17,11 +17,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Completely suppress OS default cursor and pointed hand when cursor-none is active */
+  /* Completely suppress OS default cursor and pointed hand when cursor-none or custom cursor is active */
   .cursor-none,
   .cursor-none *,
   .cursor-none button,
-  .cursor-none a {
+  .cursor-none a,
+  .custom-cursor-active,
+  .custom-cursor-active * {
     cursor: none !important;
   }
 }
@@ -155,3 +157,18 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #00f3ffaa;
 }
+
+/* Orbiting Border Electron / Beam Animation */
+@keyframes orbitBorderElectron {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
+
+.animate-border-electron {
+  animation: orbitBorderElectron 14s linear infinite;
+}
+

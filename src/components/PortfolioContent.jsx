@@ -1,14 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { RotateCcw, Terminal, ShieldCheck, Cpu, Code2, Globe, Sparkles, ExternalLink, Github } from 'lucide-react';
+import { RotateCcw, ArrowLeft, Terminal, ShieldCheck, Cpu, Code2, Globe, Sparkles, ExternalLink, Github } from 'lucide-react';
 
 /**
  * PortfolioContent Component
  * The revealed main portfolio placeholder in State 5.
- * Features a sleek cyberpunk engineering landing page and a dedicated
- * "Re-initialize System" replay button to smoothly reset back to State 1.
+ * Features a sleek cyberpunk engineering landing page with dedicated
+ * Return to Normal and Re-initialize controls.
  */
-export default function PortfolioContent({ onReset }) {
+export default function PortfolioContent({ onReset, onReplaySequence }) {
   const projects = [
     {
       title: 'QUANTUM COMPUTE KERNEL',
@@ -70,22 +70,26 @@ export default function PortfolioContent({ onReset }) {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center space-x-4">
-          <div className="hidden md:flex items-center space-x-6 text-xs font-mono text-slate-400">
-            <a href="#projects" className="hover:text-cyan-400 transition-colors">PROJECTS</a>
-            <a href="#architecture" className="hover:text-cyan-400 transition-colors">ARCHITECTURE</a>
-            <a href="#telemetry" className="hover:text-cyan-400 transition-colors">TELEMETRY</a>
-          </div>
-
-          {/* Re-initialize System Replay Button */}
+        <div className="flex items-center space-x-3">
+          {/* Re-run sequence button */}
           <button
-            id="reinitialize-button"
-            onClick={onReset}
-            className="group flex items-center space-x-2 px-3.5 py-1.5 rounded bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-500/60 hover:border-cyan-400 font-mono text-xs text-cyan-300 hover:text-white transition-all duration-200 shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_20px_rgba(0,243,255,0.7)] active:scale-95 cursor-pointer"
-            title="Re-run State 1 to 4 cinematic sequence"
+            onClick={onReplaySequence || onReset}
+            className="group flex items-center space-x-1.5 px-3 py-1.5 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 font-mono text-xs text-white/60 hover:text-white transition-all duration-200 cursor-pointer"
+            title="Replay sequence from State 1"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" />
-            <span className="tracking-wider uppercase font-semibold">RE-INITIALIZE SYSTEM</span>
+            <RotateCcw className="w-3 h-3 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" />
+            <span className="tracking-wider uppercase text-[11px] hidden sm:inline-block">REPLAY</span>
+          </button>
+
+          {/* Return to Normal Portfolio Button */}
+          <button
+            id="return-to-normal-button"
+            onClick={onReset}
+            className="group flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 hover:border-cyan-400 font-mono text-xs text-cyan-300 hover:text-white transition-all duration-200 shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:shadow-[0_0_25px_rgba(0,243,255,0.6)] active:scale-95 cursor-pointer"
+            title="Return to Clean Portfolio"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-cyan-400 group-hover:-translate-x-0.5 transition-transform" />
+            <span className="tracking-wider uppercase font-semibold text-[11px]">RETURN TO NORMAL</span>
           </button>
         </div>
       </header>
@@ -121,15 +125,16 @@ export default function PortfolioContent({ onReset }) {
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
-            <a
-              href="#projects"
-              className="px-6 py-3 bg-cyan-400 text-black font-mono font-semibold text-sm rounded shadow-[0_0_20px_rgba(0,243,255,0.6)] hover:bg-cyan-300 hover:shadow-[0_0_30px_rgba(0,243,255,0.9)] transition-all cursor-pointer"
-            >
-              EXPLORE REPOSITORY
-            </a>
             <button
               onClick={onReset}
-              className="px-6 py-3 bg-neutral-900 border border-neutral-700 hover:border-cyan-400 text-slate-200 font-mono text-sm rounded transition-all flex items-center space-x-2 cursor-pointer hover:bg-neutral-800"
+              className="px-6 py-3 bg-cyan-400 text-black font-mono font-bold text-sm rounded-lg shadow-[0_0_20px_rgba(0,243,255,0.6)] hover:bg-cyan-300 hover:shadow-[0_0_30px_rgba(0,243,255,0.9)] transition-all cursor-pointer flex items-center space-x-2"
+            >
+              <ArrowLeft className="w-4 h-4 text-black" />
+              <span>RETURN TO NORMAL PORTFOLIO</span>
+            </button>
+            <button
+              onClick={onReplaySequence || onReset}
+              className="px-6 py-3 bg-neutral-900 border border-neutral-700 hover:border-cyan-400 text-slate-200 font-mono text-sm rounded-lg transition-all flex items-center space-x-2 cursor-pointer hover:bg-neutral-800"
             >
               <RotateCcw className="w-4 h-4 text-cyan-400" />
               <span>TEST SEQUENCE AGAIN</span>

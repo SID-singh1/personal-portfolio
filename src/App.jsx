@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ThumbsUp, ThumbsDown, Check, X, Sparkles } from 'lucide-react';
 import CleanPortfolio from './components/CleanPortfolio';
 import OverclockSequence from './components/OverclockSequence';
+import ShutdownTransition from './components/ShutdownTransition';
+import { incrementVisitCount, sendTelemetry } from './utils/telemetry';
 
 /**
- * App Component — Dual-State Architecture
+ * App Component — Dual-State Architecture with URL Hash Routing (#ultra)
  *
  * Default: CleanPortfolio — hyper-clean, minimalist Vercel/Linear-style dark portfolio.
  *          Features a "temptation trigger" widget in the bottom-right corner.
@@ -12,110 +15,172 @@ import OverclockSequence from './components/OverclockSequence';
  * Overclocked: OverclockSequence — the full gamified cinematic sequence
  *              (Cold Boot → Flashlight → Ignition → Circuit Surge → Glitch → Reveal).
  *
- * Transition: Heavy CRT power-down animation tears the CleanPortfolio before
- *             mounting the OverclockSequence in its pitch-black Cold Boot state.
+ * Transition: Rogue AI Matrix Skull glitch → 4-sided diamond CRT collapse → 2s void → Cold Boot.
+ *
+ * URL Routing: Native `#ultra` hash support so refreshing reloads cleanly into Cold Boot,
+ *              and browser Back button / ESC returns to CleanPortfolio smoothly.
  */
 export default function App() {
-  const [isOverclocked, setIsOverclocked] = useState(false);
-  const [isPoweringDown, setIsPoweringDown] = useState(false);
+  const [isOverclocked, setIsOverclocked] = useState(() => {
+    return typeof window !== 'undefined' && window.location.hash === '#ultra';
+  });
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showFeedbackToast, setShowFeedbackToast] = useState(false);
+  const [feedbackVote, setFeedbackVote] = useState(null); // 'up' | 'down' | null
+
+  // Initialize visit tracking & URL hash listener
+  useEffect(() => {
+    const isUltra = window.location.hash === '#ultra';
+    const visitCount = incrementVisitCount();
+    sendTelemetry('VISIT', {
+      mode: isUltra ? 'ultra' : 'clean',
+      visitCount,
+    });
+
+    const handleHashChange = () => {
+      const isNowUltra = window.location.hash === '#ultra';
+      if (isNowUltra) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        setIsOverclocked(true);
+      } else {
+        setIsOverclocked(false);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
+  }, []);
 
   // Triggered by the Temptation Widget in CleanPortfolio
   const handleOverclock = useCallback(() => {
-    // Play the power-down transition before switching
-    setIsPoweringDown(true);
-    // After the power-down tear animation completes, mount the overclock sequence
-    setTimeout(() => {
-      setIsPoweringDown(false);
-      setIsOverclocked(true);
-    }, 850); // duration of the screen-tear + black collapse
+    setShowFeedbackToast(false);
+    // Play the 4-phase cinematic shutdown transition (Matrix Skull -> Diamond -> Void -> Cold Boot)
+    setIsTransitioning(true);
   }, []);
 
-  // Triggered by the "RE-INITIALIZE SYSTEM" button in OverclockSequence
+  // Called when the 3.2s shutdown transition finishes (void ends)
+  const handleTransitionComplete = useCallback(() => {
+    window.location.hash = '#ultra';
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setIsTransitioning(false);
+    setIsOverclocked(true);
+    sendTelemetry('ULTRA_ENTER', { trigger: 'Temptation Button' });
+  }, []);
+
+  // Triggered by any "RETURN TO NORMAL" button or ESC key in OverclockSequence
   const handleReturnToStable = useCallback(() => {
+    window.location.hash = '';
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setIsOverclocked(false);
+    setShowFeedbackToast(true);
+    setFeedbackVote(null);
   }, []);
 
   return (
     <div className="relative w-full overflow-x-hidden min-h-screen bg-[#09090b]">
-      <AnimatePresence mode="wait">
-        {!isOverclocked && !isPoweringDown && (
-          <CleanPortfolio key="clean" onOverclock={handleOverclock} />
-        )}
+      {/* Dynamic Viewport: CleanPortfolio or OverclockSequence */}
+      {!isOverclocked && (
+        <CleanPortfolio onOverclock={handleOverclock} />
+      )}
 
-        {isOverclocked && (
-          <OverclockSequence key="overclock" onReturnToStable={handleReturnToStable} />
-        )}
-      </AnimatePresence>
+      {isOverclocked && (
+        <OverclockSequence onReturnToStable={handleReturnToStable} />
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════
-          POWER-DOWN TRANSITION
-          Heavy CRT screen-tear + vertical collapse + blackout
-          Plays when transitioning from CleanPortfolio → OverclockSequence
+          CINEMATIC SHUTDOWN TRANSITION (Matrix Skull + Diamond Collapse + 2s Void)
+          ═══════════════════════════════════════════════════════════════ */}
+      {isTransitioning && (
+        <ShutdownTransition onComplete={handleTransitionComplete} />
+      )}
+
+
+      {/* ═══════════════════════════════════════════════════════════════
+          POST-OVERCLOCK TELEMETRY FEEDBACK HUD (Thumbs Up / Down)
           ═══════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
-        {isPoweringDown && (
-          <>
-            {/* Layer 1: CRT horizontal tear slices */}
-            <motion.div
-              className="fixed inset-0 z-[60] pointer-events-none animate-screen-tear"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            />
+        {showFeedbackToast && !isOverclocked && (
+          <motion.div
+            className="fixed bottom-6 left-6 z-50 max-w-sm"
+            initial={{ opacity: 0, y: 24, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.94 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            <div className="p-4 rounded-xl border border-cyan-500/35 bg-[#0c0c0e]/95 backdrop-blur-xl shadow-[0_0_35px_rgba(0,243,255,0.22)] text-white space-y-3">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-[10px] font-mono text-cyan-300 font-bold uppercase tracking-wider">
+                    SYS::OVERCLOCK TRANSITION
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowFeedbackToast(false)}
+                  className="text-white/40 hover:text-white text-xs font-mono p-1 rounded hover:bg-white/10 transition-colors cursor-pointer"
+                  title="Dismiss Feedback"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-            {/* Layer 2: Chromatic aberration RGB split overlay */}
-            <motion.div
-              className="fixed inset-0 z-[61] pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.8, 0.3, 0.9, 0.5, 0] }}
-              transition={{ duration: 0.65, ease: 'linear' }}
-              style={{
-                filter: 'drop-shadow(4px 0 0 rgba(255,0,80,0.6)) drop-shadow(-4px 0 0 rgba(0,243,255,0.6))',
-              }}
-            />
+              {!feedbackVote ? (
+                <>
+                  <p className="text-xs text-white/70 font-mono leading-relaxed">
+                    System de-overclocked to stable canvas. How was the cinematic overclock experience?
+                  </p>
 
-            {/* Layer 3: CRT scanlines overlay */}
-            <motion.div
-              className="fixed inset-0 z-[62] pointer-events-none crt-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.5, 0.3, 0.5, 0] }}
-              transition={{ duration: 0.55 }}
-            />
+                  <div className="flex items-center space-x-2 pt-1">
+                    <button
+                      onClick={() => {
+                        setFeedbackVote('up');
+                        sendTelemetry('FEEDBACK', { rating: 'SICK (👍)' });
+                        setTimeout(() => setShowFeedbackToast(false), 3600);
+                      }}
+                      className="flex-1 py-2 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/35 hover:border-emerald-400 text-emerald-300 text-xs font-mono font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer shadow-[0_0_12px_rgba(16,185,129,0.15)] active:scale-95"
+                    >
+                      <ThumbsUp className="w-3.5 h-3.5" />
+                      <span>SICK (👍)</span>
+                    </button>
 
-            {/* Layer 4: Amber/cyan voltage surge flash */}
-            <motion.div
-              className="fixed inset-0 z-[63] pointer-events-none"
-              initial={{ opacity: 0, backgroundColor: 'rgba(255,183,3,0.15)' }}
-              animate={{
-                opacity: [0, 0.4, 0.1, 0.3, 0],
-                backgroundColor: [
-                  'rgba(255,183,3,0.15)',
-                  'rgba(0,243,255,0.2)',
-                  'rgba(255,183,3,0.1)',
-                  'rgba(0,0,0,0)',
-                ],
-              }}
-              transition={{ duration: 0.5 }}
-            />
-
-            {/* Layer 5: Vertical CRT collapse — classic tube TV power-down */}
-            <motion.div
-              className="fixed inset-0 z-[64] pointer-events-none bg-black"
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 0.45, duration: 0.35, ease: [0.85, 0, 0.15, 1] }}
-              style={{ transformOrigin: 'center center' }}
-            />
-
-            {/* Layer 6: Brief phosphor afterglow line (CRT shutdown bar) */}
-            <motion.div
-              className="fixed left-0 right-0 top-1/2 -translate-y-1/2 z-[65] pointer-events-none h-[2px] bg-white/80 shadow-[0_0_20px_rgba(255,255,255,0.6)]"
-              initial={{ scaleX: 1, opacity: 1 }}
-              animate={{ scaleX: 0, opacity: 0 }}
-              transition={{ delay: 0.65, duration: 0.2, ease: 'easeIn' }}
-            />
-          </>
+                    <button
+                      onClick={() => {
+                        setFeedbackVote('down');
+                        sendTelemetry('FEEDBACK', { rating: 'MEH (👎)' });
+                        setTimeout(() => setShowFeedbackToast(false), 3600);
+                      }}
+                      className="flex-1 py-2 px-3 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/35 hover:border-amber-400 text-amber-300 text-xs font-mono font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer shadow-[0_0_12px_rgba(245,158,11,0.15)] active:scale-95"
+                    >
+                      <ThumbsDown className="w-3.5 h-3.5" />
+                      <span>MEH (👎)</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <motion.div
+                  className="py-1 text-xs font-mono space-y-1"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center space-x-1.5 text-cyan-300 font-semibold">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>TELEMETRY LOGGED</span>
+                  </div>
+                  <p className="text-[11px] text-white/60 font-light">
+                    {feedbackVote === 'up'
+                      ? 'Peak 120 FPS confirmed. Overclock rating recorded to telemetry logs // Thank you!'
+                      : 'Underclock noted. Diagnostic logs captured for optimization.'}
+                  </p>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -17,6 +17,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import ScrollCard from '../ScrollCard';
+import SectionBorderElectron from '../SectionBorderElectron';
 
 export default function ExperienceSection() {
   const [activeTab, setActiveTab] = useState('all');
@@ -102,12 +103,12 @@ export default function ExperienceSection() {
 
   return (
     <div id="experience" className="relative scroll-mt-24">
-      {/* Subtle Atmospheric Ambient Wash (Samsung R&D Electric Blue / Cyan Glow) */}
+      {/* Distinct Atmospheric Ambient Wash (Samsung R&D Electric Blue / Cyan Glow) */}
       <div
-        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(14, 165, 233, 0.08), rgba(6, 182, 212, 0.02) 50%, transparent 80%)',
+            'radial-gradient(ellipse 75% 60% at 50% 0%, rgba(14, 165, 233, 0.14), rgba(6, 182, 212, 0.04) 55%, transparent 80%)',
         }}
       />
 
@@ -143,9 +144,12 @@ export default function ExperienceSection() {
         yOffset={24}
         className="relative z-10 mb-10"
       >
-        <div className="relative rounded-2xl border border-sky-500/20 bg-[#0c0c0e]/90 backdrop-blur-md p-6 sm:p-8 overflow-hidden shadow-[0_0_50px_rgba(14,165,233,0.04)]">
+        <div className="group relative rounded-2xl border border-sky-500/30 bg-[#07111a]/90 backdrop-blur-xl p-6 sm:p-8 overflow-hidden shadow-[0_0_60px_rgba(14,165,233,0.08)] hover:shadow-[0_0_60px_rgba(14,165,233,0.18)] transition-all duration-300">
+          {/* Traveling Electron Perimeter Beam (Sky / Samsung Blue) */}
+          <SectionBorderElectron color="#0ea5e9" rx={16} duration={14} />
+
           {/* Subtle top-edge accent line */}
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent pointer-events-none" />
 
           {/* Role & Company Header */}
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 pb-6 border-b border-white/[0.06]">

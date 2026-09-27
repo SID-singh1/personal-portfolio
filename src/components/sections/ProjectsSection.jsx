@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Github, ExternalLink, Cpu, Zap, Activity } from 'lucide-react';
 import ScrollCard from '../ScrollCard';
+import SectionBorderElectron from '../SectionBorderElectron';
 
 const projects = [
   {
@@ -67,14 +68,17 @@ function InteractiveProjectCard({ project }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/80 hover:border-cyan-500/30 transition-all duration-300 overflow-hidden"
+      className="group relative p-7 rounded-xl border border-emerald-500/20 bg-[#07140e]/85 backdrop-blur-xl hover:border-emerald-400/50 transition-all duration-300 overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.06)]"
     >
+      {/* Traveling Electron Perimeter Beam (Emerald Mint) */}
+      <SectionBorderElectron color="#10b981" rx={12} duration={12} />
+
       {/* Mouse-tracking glass glare spotlight */}
       <div
         className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(400px circle at ${glarePos.x}% ${glarePos.y}%, rgba(0,243,255,0.06) 0%, rgba(255,255,255,0.03) 30%, transparent 70%)`,
+          background: `radial-gradient(400px circle at ${glarePos.x}% ${glarePos.y}%, rgba(16,185,129,0.1) 0%, rgba(255,255,255,0.02) 35%, transparent 70%)`,
         }}
       />
 
@@ -150,12 +154,12 @@ function InteractiveProjectCard({ project }) {
 export default function ProjectsSection() {
   return (
     <div id="projects" className="relative scroll-mt-24">
-      {/* Subtle Atmospheric Ambient Wash (Emerald / Production Green Glow) */}
+      {/* Distinct Atmospheric Ambient Wash (Emerald / Production Green Glow) */}
       <div
-        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(16, 185, 129, 0.07), rgba(6, 182, 212, 0.02) 50%, transparent 80%)',
+            'radial-gradient(ellipse 75% 60% at 50% 0%, rgba(16, 185, 129, 0.14), rgba(6, 182, 212, 0.04) 55%, transparent 80%)',
         }}
       />
 

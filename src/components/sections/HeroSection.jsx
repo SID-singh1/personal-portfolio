@@ -65,6 +65,7 @@ export default function HeroSection() {
 
   return (
     <motion.section
+      id="hero"
       ref={heroRef}
       style={{ opacity: heroOpacity, y: heroY, scale: heroScale }}
       className="relative min-h-[85vh] flex flex-col justify-center space-y-8 pt-8 pb-20 will-change-transform"

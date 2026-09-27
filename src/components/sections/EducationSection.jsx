@@ -1,6 +1,7 @@
 import React from 'react';
 import { GraduationCap, Award, BookOpen, CheckCircle2, Trophy, Code2 } from 'lucide-react';
 import ScrollCard from '../ScrollCard';
+import SectionBorderElectron from '../SectionBorderElectron';
 
 const educationData = [
   {
@@ -51,12 +52,12 @@ const educationData = [
 export default function EducationSection() {
   return (
     <div id="education" className="relative scroll-mt-24">
-      {/* Subtle Atmospheric Ambient Wash (Academic Sapphire / Sky Blue) */}
+      {/* Distinct Atmospheric Ambient Wash (Academic Sapphire / Sky Blue) */}
       <div
-        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(56, 189, 248, 0.07), rgba(99, 102, 241, 0.02) 50%, transparent 80%)',
+            'radial-gradient(ellipse 75% 60% at 50% 0%, rgba(56, 189, 248, 0.14), rgba(99, 102, 241, 0.04) 55%, transparent 80%)',
         }}
       />
 
@@ -130,7 +131,10 @@ export default function EducationSection() {
             exitComplete={0.95}
             yOffset={28}
           >
-            <div className="p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/70 backdrop-blur-sm hover:border-white/[0.14] transition-all">
+            <div className="group relative overflow-hidden p-6 sm:p-7 rounded-xl border border-sky-500/20 bg-[#080d18]/85 backdrop-blur-xl hover:border-sky-400/40 transition-all shadow-[0_0_30px_rgba(56,189,248,0.06)]">
+              {/* Traveling Electron Perimeter Beam (Sapphire / Sky Blue) */}
+              <SectionBorderElectron color="#60a5fa" rx={12} duration={14} />
+
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                 <div className="space-y-1.5">
                   <div className="flex items-center space-x-2.5">

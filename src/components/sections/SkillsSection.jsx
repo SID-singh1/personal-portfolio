@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import ScrollCard from '../ScrollCard';
+import SectionBorderElectron from '../SectionBorderElectron';
 
 const skillCategories = [
   {
@@ -124,12 +125,12 @@ export default function SkillsSection() {
 
   return (
     <div id="skills" className="relative scroll-mt-24">
-      {/* Subtle Atmospheric Ambient Wash (Cyan / Violet Aura) */}
+      {/* Distinct Atmospheric Ambient Wash (Indigo / Cyber Violet Aura) */}
       <div
-        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(6, 182, 212, 0.07), rgba(139, 92, 246, 0.02) 50%, transparent 80%)',
+            'radial-gradient(ellipse 75% 60% at 50% 0%, rgba(129, 140, 248, 0.14), rgba(139, 92, 246, 0.04) 55%, transparent 80%)',
         }}
       />
 
@@ -201,7 +202,10 @@ export default function SkillsSection() {
               exitComplete={0.95}
               yOffset={28}
             >
-              <div className="h-full p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/70 backdrop-blur-sm space-y-6 hover:border-white/[0.14] transition-all">
+              <div className="group relative overflow-hidden h-full p-6 sm:p-7 rounded-xl border border-indigo-500/20 bg-[#0a0b16]/85 backdrop-blur-xl space-y-6 hover:border-indigo-400/40 transition-all shadow-[0_0_30px_rgba(129,140,248,0.06)]">
+                {/* Traveling Electron Perimeter Beam (Category Accent Color) */}
+                <SectionBorderElectron color={category.accent || '#818cf8'} rx={12} duration={14} />
+
                 {/* Category title and icon */}
                 <div className="flex items-start justify-between pb-4 border-b border-white/[0.05]">
                   <div className="flex items-center space-x-3.5">

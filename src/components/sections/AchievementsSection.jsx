@@ -13,16 +13,17 @@ import {
   Terminal,
 } from 'lucide-react';
 import ScrollCard from '../ScrollCard';
+import SectionBorderElectron from '../SectionBorderElectron';
 
 export default function AchievementsSection() {
   return (
     <div id="honors" className="relative scroll-mt-24">
-      {/* Subtle Atmospheric Ambient Wash (Amber / Violet Prestige Glow) */}
+      {/* Distinct Atmospheric Ambient Wash (Amber / Violet Prestige Glow) */}
       <div
-        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-40"
+        className="absolute -top-12 inset-x-0 h-96 pointer-events-none opacity-60"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(245, 158, 11, 0.07), rgba(168, 85, 247, 0.03) 50%, transparent 80%)',
+            'radial-gradient(ellipse 75% 60% at 50% 0%, rgba(245, 158, 11, 0.14), rgba(168, 85, 247, 0.04) 55%, transparent 80%)',
         }}
       />
 
@@ -61,7 +62,10 @@ export default function AchievementsSection() {
             exitComplete={0.95}
             yOffset={24}
           >
-            <div className="h-full p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/80 hover:border-amber-500/30 transition-all flex flex-col justify-between space-y-5">
+            <div className="group relative overflow-hidden h-full p-6 sm:p-7 rounded-xl border border-amber-500/20 bg-[#140e06]/85 backdrop-blur-xl hover:border-amber-400/50 transition-all flex flex-col justify-between space-y-5 shadow-[0_0_30px_rgba(245,158,11,0.06)]">
+              {/* Traveling Electron Perimeter Beam (Amber Gold) */}
+              <SectionBorderElectron color="#f59e0b" rx={12} duration={14} />
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center">
@@ -107,7 +111,10 @@ export default function AchievementsSection() {
             exitComplete={0.95}
             yOffset={24}
           >
-            <div className="h-full p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/80 hover:border-cyan-500/30 transition-all flex flex-col justify-between space-y-5">
+            <div className="group relative overflow-hidden h-full p-6 sm:p-7 rounded-xl border border-cyan-500/20 bg-[#140e06]/85 backdrop-blur-xl hover:border-cyan-400/50 transition-all flex flex-col justify-between space-y-5 shadow-[0_0_30px_rgba(0,243,255,0.06)]">
+              {/* Traveling Electron Perimeter Beam (Cyan) */}
+              <SectionBorderElectron color="#00f3ff" rx={12} duration={14} />
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center">
@@ -154,7 +161,10 @@ export default function AchievementsSection() {
           exitComplete={0.95}
           yOffset={24}
         >
-          <div className="p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/80 hover:border-orange-500/30 transition-all">
+          <div className="group relative overflow-hidden p-6 sm:p-7 rounded-xl border border-orange-500/20 bg-[#140e06]/85 backdrop-blur-xl hover:border-orange-400/50 transition-all shadow-[0_0_30px_rgba(249,115,22,0.06)]">
+            {/* Traveling Electron Perimeter Beam (Orange / Gold) */}
+            <SectionBorderElectron color="#f97316" rx={12} duration={14} />
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <div className="flex items-center space-x-3.5">
                 <div className="w-11 h-11 rounded-lg bg-orange-500/10 border border-orange-500/25 flex items-center justify-center shrink-0">
@@ -204,7 +214,7 @@ export default function AchievementsSection() {
           exitComplete={0.95}
           yOffset={24}
         >
-          <div className="p-6 sm:p-7 rounded-xl border border-white/[0.07] bg-[#0c0c0e]/80 hover:border-purple-500/30 transition-all">
+          <div className="p-6 sm:p-7 rounded-xl border border-purple-500/20 bg-[#130a16]/85 backdrop-blur-xl hover:border-purple-400/50 transition-all shadow-[0_0_30px_rgba(168,85,247,0.06)]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <div className="flex items-center space-x-3.5">
                 <div className="w-11 h-11 rounded-lg bg-purple-500/10 border border-purple-500/25 flex items-center justify-center shrink-0">
