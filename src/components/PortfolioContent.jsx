@@ -1,14 +1,67 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { RotateCcw, ArrowLeft, Terminal, ShieldCheck, Cpu, Code2, Globe, Sparkles, ExternalLink, Github } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  RotateCcw,
+  ArrowLeft,
+  Terminal,
+  ShieldCheck,
+  Cpu,
+  Sparkles,
+  Server,
+  Trophy,
+  Heart,
+} from 'lucide-react';
+import PythonPrankJumpscare from './PythonPrankJumpscare';
+import { sendTelemetry } from '../utils/telemetry';
 
 /**
  * PortfolioContent Component
- * The revealed main portfolio placeholder in State 5.
- * Features a sleek cyberpunk engineering landing page with dedicated
- * Return to Normal and Re-initialize controls.
+ * The revealed main portfolio placeholder in State 5 (Ultra Mode).
+ * Features:
+ * - Sleek cyberpunk engineering landing page
+ * - Dedicated "TECHNICAL RUNTIMES & CAPABILITIES" matrix
+ * - Interactive Python skill card with one-time jumpscare easter egg prank
+ * - Preloaded 4K HD images for zero-latency execution
  */
 export default function PortfolioContent({ onReset, onReplaySequence }) {
+  // ─── Prank State Management ───
+  // Use a REF for the triggered guard — refs update synchronously,
+  // preventing the race condition where rapid mouse re-entry during
+  // the overlay mount could re-trigger before setState flushes.
+  const [isPrankActive, setIsPrankActive] = useState(false);
+  const [prankOrigin, setPrankOrigin] = useState({ x: 500, y: 400 });
+  const prankTriggeredRef = useRef(
+    typeof window !== 'undefined' && sessionStorage.getItem('python_prank_triggered') === 'true'
+  );
+  const [hasTriggeredPrank, setHasTriggeredPrank] = useState(prankTriggeredRef.current);
+
+  // Preload HD images immediately on mount so jumpscare has zero latency
+  useEffect(() => {
+    const pScary = new Image();
+    pScary.src = '/pictures/python_scary_hd.png';
+    const pCute = new Image();
+    pCute.src = '/pictures/python_cute_hd.png';
+  }, []);
+
+  // Primary Hover Trigger — one-time only per session, ref-guarded
+  const handlePythonHover = useCallback((e) => {
+    // Synchronous check — prevents double fire even if React batches state
+    if (prankTriggeredRef.current) return;
+    prankTriggeredRef.current = true; // Lock IMMEDIATELY
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPrankOrigin({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    });
+    setIsPrankActive(true);
+    setHasTriggeredPrank(true);
+    try {
+      sessionStorage.setItem('python_prank_triggered', 'true');
+    } catch {}
+    sendTelemetry('PYTHON_PRANK_TRIGGERED', { trigger: 'hover_initial' });
+  }, []);
+
   const projects = [
     {
       title: 'QUANTUM COMPUTE KERNEL',
@@ -39,7 +92,7 @@ export default function PortfolioContent({ onReset, onReplaySequence }) {
   return (
     <motion.div
       id="portfolio-main-content"
-      className="relative min-h-screen w-full bg-[#040711] text-slate-100 selection:bg-cyan-500 selection:text-black z-10 overflow-y-auto"
+      className="fixed inset-0 h-full w-full bg-[#040711] text-slate-100 selection:bg-cyan-500 selection:text-black z-10 overflow-y-auto overflow-x-hidden select-text pointer-events-auto"
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
@@ -64,13 +117,14 @@ export default function PortfolioContent({ onReset, onReplaySequence }) {
             </div>
             <div className="flex items-center space-x-1 text-[10px] font-mono text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CIRCUITS ONLINE</span>
+              <span>CIRCUITS ONLINE // ULTRA MODE</span>
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center space-x-3">
+
           {/* Re-run sequence button */}
           <button
             onClick={onReplaySequence || onReset}
@@ -139,6 +193,254 @@ export default function PortfolioContent({ onReset, onReplaySequence }) {
               <RotateCcw className="w-4 h-4 text-cyan-400" />
               <span>TEST SEQUENCE AGAIN</span>
             </button>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            TECHNICAL CAPABILITIES & ACTIVE RUNTIMES (ULTRA VERSION)
+            Features the flagship interactive Python Runtime node with the
+            one-time jumpscare easter egg prank!
+            ═══════════════════════════════════════════════════════════════════ */}
+        <section id="ultra-capabilities" className="mb-16 space-y-6">
+          <div className="flex items-center justify-between border-b border-cyan-900/40 pb-3">
+            <div className="flex items-center space-x-3">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 shadow-[0_0_12px_rgba(0,243,255,0.2)]">
+                CORE CAPABILITIES
+              </span>
+              <h2 className="text-base sm:text-lg font-mono text-white/90 uppercase tracking-wider">
+                ACTIVE SYSTEM RUNTIMES
+              </h2>
+            </div>
+            <span className="text-[10px] font-mono text-cyan-400/70 hidden sm:inline-block">
+              [ REAL-TIME KERNEL INSPECTION ]
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Card 1: PYTHON 3.12 FLAGSHIP (The Interactive Prank Box) */}
+            <div className="group relative p-6 bg-[#080d1e]/80 border border-cyan-500/30 hover:border-cyan-400/60 rounded-xl transition-all shadow-[0_0_25px_rgba(0,243,255,0.06)] flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                      <Terminal className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono font-bold text-base text-white group-hover:text-amber-300 transition-colors">
+                        Python 3.12 Core Engine
+                      </h3>
+                      <p className="text-[11px] font-mono text-slate-400">
+                        Primary Computational & AI Runtime
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-amber-400/40 text-amber-300 bg-amber-950/40 uppercase">
+                    PRIMARY STACK
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-light mb-4">
+                  High-performance asynchronous architectures, metaprogramming, PyTorch model pipelines, and autonomous agent loops.
+                </p>
+
+                {/* Sub-features pills */}
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {['AsyncIO', 'PyTorch', 'FastAPI', 'LangGraph', 'Scientific Stack'].map((t) => (
+                    <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-200">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── THE INTERACTIVE PYTHON BOX / ICON ── */}
+              <div>
+                {!hasTriggeredPrank ? (
+                  <div
+                    id="python-runtime-interactive-box"
+                    onMouseEnter={handlePythonHover}
+                    className="relative overflow-hidden flex items-center justify-between p-3.5 rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-amber-900/15 to-neutral-950/80 hover:border-amber-400/60 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all duration-300"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative flex h-3.5 w-3.5 items-center justify-center">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-50" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+                      </div>
+                      <div>
+                        <div className="font-mono text-xs font-bold text-amber-300 flex items-center space-x-2">
+                          <span className="text-sm">🐍</span>
+                          <span>PYTHON RUNTIME v3.12</span>
+                        </div>
+                        <div className="text-[10px] font-mono text-amber-200/50 mt-0.5">
+                          Process active · PID 3847 · 0 faults
+                        </div>
+                      </div>
+                    </div>
+
+                    <span className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>RUNNING</span>
+                    </span>
+                  </div>
+                ) : (
+                  /* Pacified State after prank completed — clean, no re-trigger buttons */
+                  <div
+                    id="python-runtime-interactive-box-pacified"
+                    className="relative overflow-hidden flex items-center justify-between p-3.5 rounded-lg border border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 to-neutral-950/80 shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">🐍</span>
+                      <div>
+                        <div className="font-mono text-xs font-bold text-emerald-300 flex items-center space-x-1.5">
+                          <span>PYTHON RUNTIME :: PACIFIED</span>
+                          <Heart className="w-3 h-3 text-pink-400 fill-pink-400 animate-pulse" />
+                        </div>
+                        <div className="text-[10px] font-mono text-emerald-400/60 mt-0.5">
+                          Innocent baby snake is resting peacefully :3
+                        </div>
+                      </div>
+                    </div>
+
+                    <span className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300/70 text-[10px] font-mono">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>TAMED</span>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Card 2: GENERATIVE AI & AGENTIC SYSTEMS */}
+            <div className="group relative p-6 bg-[#080d1e]/80 border border-cyan-500/20 hover:border-cyan-400/50 rounded-xl transition-all shadow-[0_0_25px_rgba(0,243,255,0.04)] flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-cyan-300 shadow-[0_0_12px_rgba(0,243,255,0.25)]">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono font-bold text-base text-white group-hover:text-cyan-300 transition-colors">
+                        Generative AI & Agentic Systems
+                      </h3>
+                      <p className="text-[11px] font-mono text-slate-400">
+                        Autonomous Multi-Actor Loops & Vector RAG
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-cyan-400/40 text-cyan-300 bg-cyan-950/40 uppercase">
+                    PRODUCTION
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-light mb-4">
+                  Autonomous cyclic state machines with LangGraph, hybrid dense/sparse vector retrieval, prompt alignment via DSPy, and quantization runtimes (GGUF/llama.cpp).
+                </p>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {['LangGraph', 'Qdrant RAG', 'Claude / Gemini', 'Quantization (INT4)', 'DSPy'].map((t) => (
+                    <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-200">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-neutral-950/70 border border-cyan-900/40 flex items-center justify-between text-[11px] font-mono text-cyan-300">
+                <span className="flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <span>AGENT PIPELINES: OPTIMIZED</span>
+                </span>
+                <span className="text-slate-400">&lt; 0.8s TTFT</span>
+              </div>
+            </div>
+
+            {/* Card 3: DISTRIBUTED BACKEND & VECTOR DATASTORES */}
+            <div className="group relative p-6 bg-[#080d1e]/80 border border-emerald-500/20 hover:border-emerald-400/50 rounded-xl transition-all shadow-[0_0_25px_rgba(16,185,129,0.04)] flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-400/40 flex items-center justify-center text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+                      <Server className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono font-bold text-base text-white group-hover:text-emerald-300 transition-colors">
+                        Distributed Backend & Vector Search
+                      </h3>
+                      <p className="text-[11px] font-mono text-slate-400">
+                        High-Concurrency APIs & Real-time Datastores
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-emerald-400/40 text-emerald-300 bg-emerald-950/40 uppercase">
+                    HIGH LOAD
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-light mb-4">
+                  Schema-enforced microservices with FastAPI, Redis caching & pub/sub, Qdrant vector indexing, and connection-pooled SQLAlchemy architectures.
+                </p>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {['FastAPI', 'Redis Pub/Sub', 'Qdrant Vector DB', 'Docker', 'REST / Sockets'].map((t) => (
+                    <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-200">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-neutral-950/70 border border-emerald-900/40 flex items-center justify-between text-[11px] font-mono text-emerald-300">
+                <span className="flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>VECTOR LATENCY</span>
+                </span>
+                <span className="text-slate-400">P99 &lt; 4.2ms</span>
+              </div>
+            </div>
+
+            {/* Card 4: CORE CS & ALGORITHMIC PROBLEM SOLVING */}
+            <div className="group relative p-6 bg-[#080d1e]/80 border border-amber-500/20 hover:border-amber-400/50 rounded-xl transition-all shadow-[0_0_25px_rgba(245,158,11,0.04)] flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                      <Trophy className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono font-bold text-base text-white group-hover:text-amber-300 transition-colors">
+                        Core CS & Algorithms
+                      </h3>
+                      <p className="text-[11px] font-mono text-slate-400">
+                        LeetCode Knight (Rating 1837 · Top 6%)
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-amber-400/40 text-amber-300 bg-amber-950/40 uppercase">
+                    680+ SOLVED
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-light mb-4">
+                  Rigorous algorithmic discipline in C++ and Python: memory allocation, cache locality, graph algorithms, dynamic programming, and lock-free concurrency.
+                </p>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {['C++ & Java', 'Data Structures', 'Lock-Free Queues', 'OS Kernels', 'System Design'].map((t) => (
+                    <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-200">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-neutral-950/70 border border-amber-900/40 flex items-center justify-between text-[11px] font-mono text-amber-300">
+                <span className="flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  <span>GLOBAL STANDING</span>
+                </span>
+                <span className="text-slate-400">TOP 6% WORLDWIDE</span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -222,6 +524,20 @@ export default function PortfolioContent({ onReset, onReplaySequence }) {
       <footer className="border-t border-neutral-900 bg-black/80 px-6 py-6 text-center text-xs font-mono text-slate-500">
         SYSTEM KERNEL V4.2 // ALL CIRCUITS FUNCTIONAL // PRODUCED WITH ANTIGRAVITY ENGINE
       </footer>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PYTHON JUMPSCARE PRANK MODAL
+          ═══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {isPrankActive && (
+          <PythonPrankJumpscare
+            triggerOrigin={prankOrigin}
+            onComplete={() => setIsPrankActive(false)}
+            scaryImageSrc="/pictures/python_scary_hd.png"
+            cuteImageSrc="/pictures/python_cute_hd.png"
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
