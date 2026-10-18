@@ -55,13 +55,6 @@ export default function App() {
     };
   }, []);
 
-  // Triggered by the Temptation Widget in CleanPortfolio
-  const handleOverclock = useCallback(() => {
-    setShowFeedbackToast(false);
-    // Play the 4-phase cinematic shutdown transition (Matrix Skull -> Diamond -> Void -> Cold Boot)
-    setIsTransitioning(true);
-  }, []);
-
   // Called when the 3.2s shutdown transition finishes (void ends)
   const handleTransitionComplete = useCallback(() => {
     window.location.hash = '#ultra';
@@ -70,6 +63,18 @@ export default function App() {
     setIsOverclocked(true);
     sendTelemetry('ULTRA_ENTER', { trigger: 'Temptation Button' });
   }, []);
+
+  // Triggered by the Temptation Widget in CleanPortfolio
+  const handleOverclock = useCallback(() => {
+    setShowFeedbackToast(false);
+    // Reduced-motion users skip the flashing/shaking shutdown entirely
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      handleTransitionComplete();
+      return;
+    }
+    // Play the 4-phase cinematic shutdown transition (Matrix Skull -> Diamond -> Void -> Cold Boot)
+    setIsTransitioning(true);
+  }, [handleTransitionComplete]);
 
   // Triggered by any "RETURN TO NORMAL" button or ESC key in OverclockSequence
   const handleReturnToStable = useCallback(() => {
@@ -81,7 +86,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative w-full overflow-x-hidden min-h-screen bg-[#09090b]">
+    <div className="relative w-full overflow-x-clip min-h-screen bg-[#09090b]">
       {/* Dynamic Viewport: CleanPortfolio or OverclockSequence */}
       {!isOverclocked && (
         <CleanPortfolio onOverclock={handleOverclock} />

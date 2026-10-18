@@ -1,149 +1,90 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Zap } from 'lucide-react';
+import { Terminal, Zap, Download, Menu, X } from 'lucide-react';
 import HeroSection from './sections/HeroSection';
-import AboutSection from './sections/AboutSection';
-import SkillsSection from './sections/SkillsSection';
-import ProjectsSection from './sections/ProjectsSection';
 import ExperienceSection from './sections/ExperienceSection';
+import ProjectsSection from './sections/ProjectsSection';
+import SkillsSection from './sections/SkillsSection';
 import EducationSection from './sections/EducationSection';
-import AchievementsSection from './sections/AchievementsSection';
 import ContactSection from './sections/ContactSection';
-import SectionSeparator from './SectionSeparator';
 import CustomCursor from './CustomCursor';
+import { person, resumes } from '../data/profile';
+import { sendTelemetry } from '../utils/telemetry';
+
+const NAV = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'education', label: 'Education' },
+  { id: 'contact', label: 'Contact' },
+];
 
 /**
- * CleanPortfolio Component
- * Hyper-clean, minimalist Vercel/Linear-inspired dark portfolio.
- * Features:
- * - Serene, distraction-free reading canvas (pure focus for recruiters)
- * - Scroll-linked entrance & exit fade physics (Apple-grade fluid dissolves)
- * - Subliminal circadian atmospheric ambient gradient wash & live system clock
- * - Micro-die architectural silicon watermark [ S · I · D ] at 2.8% opacity
- * - Amplified Temptation Trigger widget with corner breathing halo, sonar pulse, and violent twitch
+ * CleanPortfolio — the recruiter-first view.
+ * Built for a 10–15 second skim: who, what, proof, resume, contact — all above the fold.
+ * The Overclock widget (bottom-right) is the door to the Ultra experience.
  */
 export default function CleanPortfolio({ onOverclock }) {
   const [widgetHovered, setWidgetHovered] = useState(false);
   const [glitchTwitch, setGlitchTwitch] = useState(false);
   const [sonarPing, setSonarPing] = useState(0);
-  const [currentTime, setCurrentTime] = useState('');
-  const [circadianCycle, setCircadianCycle] = useState({
-    label: 'AVAILABLE FOR WORK',
-    gradient: 'from-cyan-500/[0.03]',
-  });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
 
-  // Live Local Time & Circadian Atmospheric Shift
+  // Occasional twitch on the overclock widget (an invitation, not a distraction)
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-      const simHourParam = urlParams?.get('simHour');
-      const isSim = simHourParam !== null && simHourParam !== undefined && simHourParam !== '';
-      const hours = isSim ? parseInt(simHourParam, 10) : now.getHours();
-
-      const timeStr = isSim
-        ? `${String(hours).padStart(2, '0')}:30:00`
-        : now.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-          });
-      setCurrentTime(timeStr);
-
-      // Circadian ambient wash based on user's hour (3% subtle wash, base dark canvas remains solid)
-      if (hours >= 22 || hours < 5) {
-        setCircadianCycle({
-          label: 'NIGHTLY COMPILE // LOW-LATENCY',
-          gradient: 'from-indigo-500/[0.035] via-purple-500/[0.01]',
-        });
-      } else if (hours >= 5 && hours < 12) {
-        setCircadianCycle({
-          label: 'DAWN CYCLES // SYSTEMS WARM',
-          gradient: 'from-cyan-500/[0.035] via-sky-500/[0.01]',
-        });
-      } else if (hours >= 12 && hours < 18) {
-        setCircadianCycle({
-          label: 'PEAK LOAD // CONCURRENT WORKLOADS',
-          gradient: 'from-white/[0.025] via-transparent',
-        });
-      } else {
-        setCircadianCycle({
-          label: 'DUSK RECURSION // ASYNC FLUSH',
-          gradient: 'from-amber-500/[0.03] via-orange-500/[0.01]',
-        });
-      }
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Violent Twitch: every 8s, harsh 150ms X-axis snap
-  useEffect(() => {
-    const scheduleGlitch = () => {
-      const delay = 7500 + Math.random() * 1000;
-      return setTimeout(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let t;
+    const schedule = () => {
+      t = setTimeout(() => {
         if (!widgetHovered) {
           setGlitchTwitch(true);
           setTimeout(() => setGlitchTwitch(false), 150);
         }
-        timerRef.current = scheduleGlitch();
-      }, delay);
+        schedule();
+      }, 7500 + Math.random() * 1000);
     };
-
-    const timerRef = { current: scheduleGlitch() };
-    return () => clearTimeout(timerRef.current);
+    schedule();
+    return () => clearTimeout(t);
   }, [widgetHovered]);
 
-  // Sonar Pulse: every 4s, expanding ring
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSonarPing((k) => k + 1);
-    }, 4000);
+    const interval = setInterval(() => setSonarPing((k) => k + 1), 4000);
     return () => clearInterval(interval);
   }, []);
 
-  // In-Page Active Section Scroll Spy
-  const [activeSection, setActiveSection] = useState('hero');
-
+  // Scroll spy
   useEffect(() => {
-    const sectionIds = ['about', 'skills', 'experience', 'projects', 'education', 'honors', 'contact'];
-    const handleScroll = () => {
-      const scrollPos = window.scrollY + 240;
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sectionIds[i]);
-        if (el && el.offsetTop <= scrollPos) {
-          setActiveSection(sectionIds[i]);
+    const onScroll = () => {
+      const pos = window.scrollY + 200;
+      for (let i = NAV.length - 1; i >= 0; i--) {
+        const el = document.getElementById(NAV[i].id);
+        if (el && el.offsetTop <= pos) {
+          setActiveSection(NAV[i].id);
           return;
         }
       }
       setActiveSection('hero');
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <motion.div
-      className="relative min-h-screen w-full bg-[#09090b] text-neutral-100 selection:bg-cyan-500/30 selection:text-cyan-200"
+      className="relative min-h-screen w-full bg-[#09090b] text-neutral-100 selection:bg-cyan-500/30 selection:text-cyan-100"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.2 }}
     >
-      {/* ── Precision Cyber Reticle Custom Cursor ── */}
       <CustomCursor />
-      {/* ── Background Cyber-Grid Layer ── */}
+
+      {/* Subtle dot grid + top wash */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.035]"
         style={{
@@ -151,135 +92,103 @@ export default function CleanPortfolio({ onOverclock }) {
           backgroundSize: '24px 24px',
         }}
       />
+      <div className="fixed top-0 inset-x-0 h-96 bg-gradient-to-b from-cyan-500/[0.05] to-transparent pointer-events-none" />
 
-      {/* ── Subliminal Circadian Top Ambient Gradient Wash ── */}
-      <div
-        className={`fixed top-0 inset-x-0 h-96 bg-gradient-to-b ${circadianCycle.gradient} to-transparent pointer-events-none transition-colors duration-1000`}
-      />
-
-      {/* ── Micro-Die Architectural Silicon Watermark [ S · I · D ] ── */}
-      <div className="fixed top-24 right-8 md:right-28 pointer-events-none select-none z-0 opacity-[0.028] font-mono text-right">
-        <div className="text-7xl md:text-9xl font-black tracking-widest leading-none text-white">
-          SID
-        </div>
-        <div className="text-[11px] tracking-[0.35em] text-white pt-1">
-          SILICON DIE // REV-04 // 64-BIT
-        </div>
-      </div>
-
-      {/* ── Sticky Top Navigation Bar ── */}
+      {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#09090b]/80 border-b border-white/[0.06]">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo & Version */}
-          <div className="flex items-center space-x-3">
-            <div className="w-7 h-7 rounded-md bg-white/[0.08] border border-white/[0.08] flex items-center justify-center">
-              <span className="text-xs font-bold text-white/80 font-mono">S</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-white/90 tracking-tight">siddhant.dev</span>
-              <span className="hidden sm:inline-block text-[10px] font-mono text-cyan-400/80 px-1.5 py-0.5 rounded bg-cyan-500/[0.08] border border-cyan-500/20">
-                v2.6
-              </span>
-            </div>
-          </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2.5 cursor-pointer">
+            <span className="w-7 h-7 rounded-md bg-white/[0.08] border border-white/10 flex items-center justify-center text-xs font-bold font-mono text-white">
+              S
+            </span>
+            <span className="text-sm font-medium text-white">{person.name}</span>
+          </button>
 
-          {/* Center: Clean Live Clock */}
-          <div className="hidden lg:flex items-center space-x-2 text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.05] bg-white/[0.015]">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-white/85 font-medium">{currentTime || '00:00:00'}</span>
-          </div>
-
-          {/* Navigation Anchors with Smooth Scroll & Active Indicator */}
-          <div className="hidden md:flex items-center space-x-5 text-[13px] font-medium">
-            {[
-              { id: 'about', label: 'About' },
-              { id: 'skills', label: 'Skills' },
-              { id: 'experience', label: 'Experience' },
-              { id: 'projects', label: 'Projects' },
-              { id: 'education', label: 'Education' },
-              { id: 'honors', label: 'Honors & Certs' },
-              { id: 'contact', label: 'Contact' },
-            ].map((item) => (
+          <div className="hidden md:flex items-center gap-6 text-sm">
+            {NAV.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className={`transition-colors duration-200 cursor-pointer relative py-1 ${
-                  activeSection === item.id
-                    ? 'text-cyan-300 font-semibold'
-                    : 'text-white/50 hover:text-white/90'
+                className={`relative py-1 cursor-pointer transition-colors ${
+                  activeSection === item.id ? 'text-white' : 'text-neutral-400 hover:text-white'
                 }`}
               >
-                <span>{item.label}</span>
+                {item.label}
                 {activeSection === item.id && (
-                  <motion.span
-                    layoutId="activeNavIndicator"
-                    className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-cyan-400 shadow-[0_0_8px_rgba(0,243,255,0.8)] rounded-full"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
+                  <motion.span layoutId="navIndicator" className="absolute -bottom-0.5 left-0 right-0 h-px bg-cyan-400" />
                 )}
               </button>
             ))}
+            <a
+              href={resumes[0].href}
+              target="_blank"
+              rel="noopener"
+              onClick={() => sendTelemetry('RESUME_OPEN', { resume: resumes[0].id, from: 'nav' })}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white text-neutral-950 font-semibold hover:bg-neutral-200 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" /> Resume
+            </a>
           </div>
+
+          <button
+            className="md:hidden p-2 -mr-2 text-neutral-300 cursor-pointer"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              className="md:hidden border-t border-white/[0.06] bg-[#09090b]"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+            >
+              <div className="px-4 py-3 flex flex-col">
+                {NAV.map((item) => (
+                  <button key={item.id} onClick={() => scrollTo(item.id)} className="py-2.5 text-left text-neutral-200 cursor-pointer">
+                    {item.label}
+                  </button>
+                ))}
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {resumes.map((r) => (
+                    <a
+                      key={r.id}
+                      href={r.href}
+                      target="_blank"
+                      rel="noopener"
+                      onClick={() => sendTelemetry('RESUME_OPEN', { resume: r.id, from: 'mobile-nav' })}
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 rounded-md bg-white/[0.06] border border-white/10 text-sm text-white"
+                    >
+                      <Download className="w-3.5 h-3.5" /> {r.label.replace('Resume · ', '')}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
-      {/* ── Main Content Container with Scroll Exit Physics & Architectural Demarcations ── */}
-      <main className="relative max-w-5xl mx-auto px-6">
+      <main className="relative max-w-5xl mx-auto px-4 sm:px-6">
         <HeroSection />
-
-        <SectionSeparator label="01 // PROFILE & ARCHITECTURAL CRAFT" color="#00f3ff" />
-        <div className="mb-20">
-          <AboutSection />
-        </div>
-
-        <SectionSeparator label="02 // TECHNICAL CAPABILITIES & MATRIX" color="#818cf8" />
-        <div className="mb-20">
-          <SkillsSection />
-        </div>
-
-        <SectionSeparator label="03 // SAMSUNG R&D EDGE INTELLIGENCE" color="#0ea5e9" />
-        <div className="mb-20">
+        <div className="space-y-24 sm:space-y-28 pb-28">
           <ExperienceSection />
-        </div>
-
-        <SectionSeparator label="04 // FEATURED SYSTEMS & ENGINES" color="#10b981" />
-        <div className="mb-20">
           <ProjectsSection />
-        </div>
-
-        <SectionSeparator label="05 // ACADEMIC RECORD & ALGORITHMS" color="#60a5fa" />
-        <div className="mb-20">
+          <SkillsSection />
           <EducationSection />
-        </div>
-
-        <SectionSeparator label="06 // HONORS, CREDENTIALS & SIGNALS" color="#f59e0b" />
-        <div className="mb-20">
-          <AchievementsSection />
-        </div>
-
-        <SectionSeparator label="07 // DIRECT COMMUNICATION CHANNELS" color="#c084fc" />
-        <div className="mb-24">
           <ContactSection />
         </div>
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-white/[0.06] bg-[#09090b]/90 py-8">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/30 font-mono">
-          <div className="flex items-center space-x-2">
-            <span>© 2026 SIDDHANT</span>
-            <span>•</span>
-            <span>ALL RIGHTS RESERVED</span>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <span className="flex items-center space-x-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>CORE STATUS: STABLE</span>
-            </span>
-            <span>•</span>
-            <span>UPTIME: 99.98%</span>
-          </div>
+      <footer className="border-t border-white/[0.06] py-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 font-mono">
+          <span>© 2026 {person.name} · Bengaluru</span>
+          <span>Built with React + Framer Motion · press the button in the corner if you're curious</span>
         </div>
       </footer>
 
@@ -291,7 +200,7 @@ export default function CleanPortfolio({ onOverclock }) {
           • Hover: expansion to "[ OVERCLOCK SYSTEM ]"
           • Click: triggers onOverclock()
           ═══════════════════════════════════════════════════════════════════ */}
-      <div className="fixed bottom-8 right-8 z-50">
+      <div className="hidden sm:block fixed bottom-8 right-8 z-50">
         <div className="relative flex items-center justify-center">
           {/* Ambient Corner Halo — subtle breathing radial aura */}
           <motion.div

@@ -16,6 +16,22 @@ export default function ShutdownTransition({ onComplete }) {
   const [glitchStep, setGlitchStep] = useState(1);
   const [phase, setPhase] = useState('GLITCH'); // 'GLITCH' | 'CRT_COLLAPSE' | 'VOID'
 
+  // Skippable: any click or key jumps straight to the cold boot
+  useEffect(() => {
+    let done = false;
+    const skip = () => {
+      if (done) return;
+      done = true;
+      onComplete?.();
+    };
+    window.addEventListener('keydown', skip);
+    window.addEventListener('pointerdown', skip);
+    return () => {
+      window.removeEventListener('keydown', skip);
+      window.removeEventListener('pointerdown', skip);
+    };
+  }, [onComplete]);
+
   useEffect(() => {
     // Step 1 -> Step 2 at 1.0s (Skull moves to Right, glitch intensifies)
     const tStep2 = setTimeout(() => {

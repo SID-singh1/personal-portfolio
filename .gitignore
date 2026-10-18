@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local telemetry log (dev server)
+telemetry_logs.txt
+
+# Private sources (master profile has salary & notes; published PDFs live in public/resume)
+/resume/
+/master_profile.json
