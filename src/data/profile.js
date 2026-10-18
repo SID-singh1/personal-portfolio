@@ -143,6 +143,24 @@ export const projects = [
     links: {},
     status: 'Completed',
   },
+  {
+    id: 'smart-glasses',
+    name: 'AI Smart Glasses Assistant',
+    kind: 'Multimodal AI',
+    tagline: 'Camera feed → vision-language scene captioning → productivity classification, scored against your schedule.',
+    metrics: [
+      { value: '2', label: 'models routed (VLM + LLM)' },
+      { value: '1–10', label: 'productivity score' },
+      { value: 'Live', label: 'demo given' },
+    ],
+    highlights: [
+      'Real-time multimodal pipeline with hybrid routing between Gemini 2.5 Flash for scene captioning and Llama-3.3-70B for classification.',
+      'Stateful session manager tracks activity transitions and scores productivity against the user\'s schedule.',
+    ],
+    stack: ['Python', 'Gemini 2.5 Flash', 'Llama-3.3-70B', 'OpenCV', 'Streamlit'],
+    links: {},
+    status: 'Completed',
+  },
 ];
 
 // Only evidence-backed skills (see master_profile.json "keep" verdicts).
