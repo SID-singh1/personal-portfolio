@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Download, Mail, Check, Github, Linkedin, Code2, MapPin, ArrowUpRight } from 'lucide-react';
 import { person, resumes, proofStats } from '../../data/profile';
 import { sendTelemetry } from '../../utils/telemetry';
+import DistillationNet from '../DistillationNet';
 
 export default function HeroSection() {
   const reduce = useReducedMotion();
@@ -21,7 +22,16 @@ export default function HeroSection() {
   });
 
   return (
-    <section id="hero" className="pt-14 sm:pt-20 pb-16 sm:pb-20">
+    <section id="hero" className="relative pt-14 sm:pt-20 pb-16 sm:pb-20">
+      <motion.div
+        className="hidden lg:block absolute right-0 top-20 w-[340px] pointer-events-none"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.4 }}
+      >
+        <DistillationNet />
+      </motion.div>
+
       <motion.div {...fade(0)} className="flex flex-wrap items-center gap-2 text-xs font-mono">
         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-300">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
