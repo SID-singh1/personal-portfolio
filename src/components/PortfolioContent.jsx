@@ -182,7 +182,7 @@ export default function PortfolioContent({ onReset, onReplaySequence }) {
               {skillGroups.map((g) => (
                 <div key={g.title} className="p-3 bg-neutral-950/80 border border-neutral-800 rounded">
                   <div className="font-mono text-xs font-semibold text-cyan-300 uppercase mb-2">{g.title}</div>
-                  <div className="text-xs text-slate-300 font-mono leading-relaxed">{g.items.join(' · ')}</div>
+                  <div className="text-xs text-slate-300 font-mono leading-relaxed">{[...g.core, ...g.familiar].join(' · ')}</div>
                 </div>
               ))}
             </div>

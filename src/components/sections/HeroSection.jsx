@@ -24,7 +24,7 @@ export default function HeroSection() {
   return (
     <section id="hero" className="relative pt-14 sm:pt-20 pb-16 sm:pb-20">
       <motion.div
-        className="hidden lg:block absolute right-0 top-20 w-[340px] pointer-events-none"
+        className="hidden lg:block absolute right-0 top-24 w-[290px] pointer-events-none"
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.4 }}

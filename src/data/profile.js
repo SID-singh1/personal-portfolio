@@ -163,23 +163,111 @@ export const projects = [
   },
 ];
 
-// Only evidence-backed skills (see master_profile.json "keep" verdicts).
+// Deeper write-ups shown when a project card is expanded.
+export const projectDetails = {
+  'prompt-memory': {
+    problem: 'Prompts typed into chat UIs lack your own context, so you re-explain yourself every time.',
+    built:
+      'A Manifest V3 extension that injects into ChatGPT, Claude, Gemini and Perplexity, backed by a FastAPI service with per-user vector memory and a multi-stage LLM rewrite pipeline streamed over SSE, plus auth, quotas, failover, analytics and CI/CD.',
+    more: [
+      '5-stage pipeline: retrieval → semantic enrichment → prompt expansion → LLM → streamed response, over Qdrant and multilingual Sentence-Transformers (MiniLM).',
+      'Distinct handling of 429, 401 and 5xx errors with mid-request failover on both sync and SSE endpoints; ONNX-backed eager model preloading removes cold starts.',
+      'Voice-to-prompt through Groq Whisper (20+ languages, including Hinglish).',
+      'HMAC-secured private analytics dashboard with anonymized user IDs, structured JSON logging and health endpoints.',
+      '443 tests (61% backend coverage); LLM and vector-DB calls mocked to test retries and streaming; GitHub Actions auto-deploys to Hugging Face Spaces.',
+    ],
+    stack: ['Python', 'FastAPI', 'Qdrant', 'Sentence-Transformers (MiniLM)', 'MongoDB', 'SSE', 'Chrome MV3', 'Google OAuth2', 'JWT', 'Groq (LLM + Whisper)', 'Gemini', 'OpenRouter', 'ONNX Runtime', 'pytest', 'GitHub Actions', 'Hugging Face Spaces', 'Vercel'],
+  },
+  distqueue: {
+    problem: 'Understand delivery guarantees, failure recovery and race conditions by building a Celery-style queue from first principles.',
+    built:
+      'Producers enqueue to a Redis Stream; consumer-group workers process and ack; separate scheduler (delayed jobs) and monitor (dead-worker recovery) services handle the rest.',
+    more: [
+      'At-least-once delivery with atomic MULTI/EXEC enqueue: ~6,200 enqueues/s (p99 0.37 ms) and ~2,000 jobs/s per worker on local Redis.',
+      'Daemon-thread heartbeats (5 s refresh, 15 s TTL) detect dead workers; XAUTOCLAIM reclaims their jobs.',
+      'Chaos test SIGKILLs a worker mid-job and asserts a survivor completes it.',
+      'Atomic Lua script prevents delayed-job double-injection; retries use exponential backoff with jitter and a dead-letter queue.',
+      '52 unit, integration and chaos tests at ~95% core coverage; Prometheus + Grafana dashboards via Docker Compose.',
+    ],
+    stack: ['Python', 'Redis Streams', 'Lua', 'Docker', 'Docker Compose', 'Prometheus', 'Grafana', 'pytest'],
+  },
+  vaani: {
+    problem: 'Hindi/Hinglish voice notes are hard to search or act on, and cloud transcription costs money and sends private audio off-device.',
+    built:
+      'Audio from the browser or Telegram → ffmpeg (webm → 16 kHz wav) → Whisper → LLM → strict JSON (summary, action items, sentiment) → PostgreSQL. One env flag switches between fully offline CPU inference and cloud APIs.',
+    more: [
+      'Quantization benchmarks tracked in MLflow + llama-bench: LLM footprint 7.29 → 2.28 GB (−68.7%), CPU generation 3.70 → 7.81 tok/s (2.1×).',
+      'Async FastAPI proxies a native llama-server daemon, so inference never blocks on the GIL.',
+      'Sliding-window chunking plus a forced language hint fixed Whisper hallucination and out-of-memory errors on audio over 30 s.',
+      'IP rate limiting, login-free per-user history via UUID provisioning, key-protected admin dashboard (users, requests, 7/14-day activity).',
+      'Vanilla-JS frontend with a Web Audio waveform; cloud mode powers a Telegram bot deployed on Render.',
+    ],
+    stack: ['Python', 'FastAPI (async)', 'Whisper-small (ONNX INT8)', 'Phi-3-mini (GGUF INT4)', 'llama.cpp / llama-server', 'ffmpeg', 'PostgreSQL', 'MLflow', 'llama-bench', 'JavaScript', 'Web Audio', 'Telegram Bot API', 'Render'],
+  },
+  aqcap: {
+    problem: 'Run an LLM-based code-vulnerability (CWE) detector on a 4 GB GPU without losing accuracy.',
+    built:
+      'Per-layer sensitivity profiling through PyTorch forward hooks → a Layer Sensitivity Index → NF4/INT8 mixed-precision assignment, evaluated across 6 configurations.',
+    more: [
+      'Profiled all 32 transformer layers of Phi-3-mini (3.82B parameters).',
+      'VRAM 7.29 → 3.04 GB (−58.3%), fitting the 4 GB budget.',
+      'F1 0.85 / recall 0.93 at 8.6 tok/s on an NVIDIA T4 with zero training cost, beating the supervised LineVul baseline (F1 0.83).',
+      'Found prompt engineering (+0.10 F1) to be a stronger lever than architectural changes.',
+      'Solo capstone under faculty guidance, graded S (highest).',
+    ],
+    stack: ['Python', 'PyTorch', 'HuggingFace Transformers', 'bitsandbytes', 'Phi-3-mini (3.82B)', 'NF4', 'INT8', 'NVIDIA T4'],
+  },
+  'smart-glasses': {
+    problem: 'Help someone see how their day is actually going against the schedule they planned.',
+    built:
+      'Camera feed → vision-language scene captioning → productivity classification → a 1–10 score against the user\'s schedule, demoed live.',
+    more: [
+      'Hybrid routing between Gemini 2.5 Flash (scene captioning) and Llama-3.3-70B (classification).',
+      'Stateful session manager tracks activity transitions over time rather than judging single frames.',
+      'OpenCV capture pipeline with a Streamlit interface.',
+    ],
+    stack: ['Python', 'Gemini 2.5 Flash', 'Llama-3.3-70B', 'OpenCV', 'Streamlit'],
+  },
+};
+
+// Skills from master_profile.json (everything except items marked "drop").
+// `core`: used in shipped work (experience/projects).
+// `familiar`: studied in depth through coursework, GATE CS prep and self-learning.
 export const skillGroups = [
   {
     title: 'Model optimization',
-    items: ['Knowledge distillation', 'INT8 PTQ / QAD', 'NF4 & mixed precision', 'GGUF / llama.cpp', 'ONNX Runtime', 'TFLite + NNAPI'],
+    core: ['Knowledge distillation', 'INT8 PTQ', 'Quantization-aware distillation', 'NF4 & mixed precision', 'GGUF / llama.cpp', 'ONNX Runtime', 'bitsandbytes', 'TFLite + NNAPI delegation'],
+    familiar: [],
   },
   {
-    title: 'ML & GenAI',
-    items: ['PyTorch', 'TensorFlow', 'HuggingFace', 'RAG', 'Whisper', 'CLIP', 'Structured LLM output'],
+    title: 'Machine learning & deep learning',
+    core: ['PyTorch', 'TensorFlow / Keras', 'HuggingFace Transformers', 'CNNs', 'Transfer learning & fine-tuning', 'CLIP', 'Pandas / NumPy'],
+    familiar: ['scikit-learn', 'OpenCV'],
   },
   {
-    title: 'Backend & infra',
-    items: ['FastAPI (async)', 'Redis Streams', 'PostgreSQL', 'MongoDB', 'Qdrant', 'Docker', 'GitHub Actions', 'Prometheus / Grafana'],
+    title: 'GenAI & LLM systems',
+    core: ['RAG', 'Vector search (Qdrant)', 'Prompt engineering', 'LLM APIs (Groq, Gemini, OpenRouter)', 'Whisper (ASR)', 'Structured / JSON output'],
+    familiar: ['Agentic AI', 'LangChain', 'LangGraph'],
   },
   {
-    title: 'Languages & core',
-    items: ['Python', 'C++', 'Java', 'JavaScript', 'SQL', 'DSA', 'Distributed systems', 'Concurrency'],
+    title: 'Backend & distributed systems',
+    core: ['FastAPI (async)', 'REST APIs', 'SSE streaming', 'OAuth2 / JWT', 'Redis (Streams, Lua)', 'PostgreSQL', 'MongoDB', 'Chrome Extensions (MV3)', 'Distributed systems', 'Concurrency & multithreading', 'System design'],
+    familiar: ['SQLite'],
+  },
+  {
+    title: 'DevOps, MLOps & cloud',
+    core: ['Docker / Compose', 'GitHub Actions (CI/CD)', 'Prometheus / Grafana', 'MLflow', 'pytest', 'Linux', 'Git', 'Bash', 'HF Spaces · Render · Vercel'],
+    familiar: ['AWS (Certified Cloud Practitioner)'],
+  },
+  {
+    title: 'Languages',
+    core: ['Python', 'C++', 'JavaScript', 'SQL'],
+    familiar: ['Java', 'C'],
+  },
+  {
+    title: 'CS fundamentals',
+    core: ['Data structures & algorithms', 'OOP'],
+    familiar: ['Operating systems', 'DBMS', 'Computer networks', 'Computer architecture', 'Theory of computation', 'Compiler design', 'Discrete mathematics'],
   },
 ];
 
