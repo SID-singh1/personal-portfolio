@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Zap, Download, Menu, X } from 'lucide-react';
+import { Terminal, Zap, Download, Menu, X, Command } from 'lucide-react';
 import HeroSection from './sections/HeroSection';
 import ExperienceSection from './sections/ExperienceSection';
 import ProjectsSection from './sections/ProjectsSection';
@@ -8,6 +8,9 @@ import SkillsSection from './sections/SkillsSection';
 import EducationSection from './sections/EducationSection';
 import ContactSection from './sections/ContactSection';
 import CustomCursor from './CustomCursor';
+import Mascot from './Mascot';
+import CommandPalette from './CommandPalette';
+import useEasterEggs from '../utils/useEasterEggs';
 import { person, resumes } from '../data/profile';
 import { sendTelemetry } from '../utils/telemetry';
 
@@ -30,6 +33,12 @@ export default function CleanPortfolio({ onOverclock }) {
   const [sonarPing, setSonarPing] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mascotActive, setMascotActive] = useState(false);
+  const openPalette = useCallback(() => setPaletteOpen(true), []);
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
+
+  useEasterEggs({ onOverclock, onOpenPalette: openPalette });
 
   // Occasional twitch on the overclock widget (an invitation, not a distraction)
   useEffect(() => {
@@ -119,6 +128,14 @@ export default function CleanPortfolio({ onOverclock }) {
                 )}
               </button>
             ))}
+            <button
+              onClick={openPalette}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-white/10 text-xs font-mono text-neutral-400 hover:text-white hover:border-white/25 transition-colors cursor-pointer"
+              title="Shortcuts (Ctrl/⌘+K)"
+              aria-label="Open command palette"
+            >
+              <Command className="w-3 h-3" />K
+            </button>
             <a
               href={resumes[0].href}
               target="_blank"
@@ -188,9 +205,12 @@ export default function CleanPortfolio({ onOverclock }) {
       <footer className="border-t border-white/[0.06] py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 font-mono">
           <span>© 2026 {person.name} · Bengaluru</span>
-          <span>Built with React + Framer Motion · press the button in the corner if you're curious</span>
+          <span>Built with React + Framer Motion · press Ctrl/⌘+K, or the button in the corner if you're curious</span>
         </div>
       </footer>
+
+      <Mascot onActiveChange={setMascotActive} />
+      <CommandPalette open={paletteOpen} onClose={closePalette} onOverclock={onOverclock} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           THE TEMPTATION TRIGGER (WIDGET) — Fixed Bottom-Right
@@ -200,7 +220,7 @@ export default function CleanPortfolio({ onOverclock }) {
           • Hover: expansion to "[ OVERCLOCK SYSTEM ]"
           • Click: triggers onOverclock()
           ═══════════════════════════════════════════════════════════════════ */}
-      <div className="hidden sm:block fixed bottom-8 right-8 z-50">
+      <div className={`hidden sm:block fixed bottom-8 right-8 z-50 transition-opacity duration-300 ${mascotActive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="relative flex items-center justify-center">
           {/* Ambient Corner Halo — subtle breathing radial aura */}
           <motion.div

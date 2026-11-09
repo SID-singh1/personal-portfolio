@@ -62,6 +62,11 @@ export default function App() {
     setIsTransitioning(false);
     setIsOverclocked(true);
     sendTelemetry('ULTRA_ENTER', { trigger: 'Temptation Button' });
+    try {
+      sessionStorage.setItem('visited_ultra', '1');
+    } catch {
+      /* storage blocked */
+    }
   }, []);
 
   // Triggered by the Temptation Widget in CleanPortfolio
